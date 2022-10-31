@@ -48,7 +48,9 @@ void print_vm(int start, int end) {
     struct VM_NODE *list = head;
 
     while(list != NULL) {
+    //Iterate through the list until the end
         if(list->vm_infos->number >= start && list->vm_infos->number <= end) {
+        //If the VM number is between the range, print it
             printf(" - VM #%d", list->vm_infos->number);
             printf(" : Busy = %d\n", list->vm_infos->busy);
         }
@@ -62,6 +64,7 @@ void delete_vm(int number) {
     struct VM_NODE *previous = NULL;
 
     while(list != NULL) {
+    //Iterate through the list until the end
         if(list->vm_infos->number == number) {
             if(previous == NULL) {
             //If the previous node is null, then this is the first node of the list

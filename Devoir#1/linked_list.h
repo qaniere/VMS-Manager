@@ -16,9 +16,16 @@ typedef struct VM_INFO {
     unsigned short *offset_end_code;
 } VM_INFO;
 
+//Add a vm to the list
 void add_vm();
+
+//Print the range of VMs in the list
 void print_vm(int start, int end);
+
+//Delete a VM from the list
 void delete_vm(int number);
+
+//Check if a VM number exists in the list
 int is_vm_exists(int number);
 
 #endif
