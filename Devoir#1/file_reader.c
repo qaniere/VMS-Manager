@@ -1,5 +1,6 @@
 #include <stdlib.h> //For file reading
 #include <string.h> //For string manipulation
+#include "file_reader.h"
 
 void read_transaction_file(char * path) {
     FILE *fd = fopen(path, "r");
