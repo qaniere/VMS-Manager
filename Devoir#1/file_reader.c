@@ -1,6 +1,8 @@
 #include <stdlib.h> //For file reading
 #include <string.h> //For string manipulation
-#include "file_reader.h"
+
+#include "file_reader.h" //Header file
+#include "linked_list.c" //For linked list manipulations
 
 void read_transaction_file(char * path) {
     FILE *fd = fopen(path, "r");
@@ -21,7 +23,7 @@ void read_transaction_file(char * path) {
 
         if(line[0] == 'A') {
         // Add transaction
-            printf("Add VM\n");
+            add_vm();
 
         } else if(line[0] == 'L') {
         //Print VM
@@ -40,7 +42,8 @@ void read_transaction_file(char * path) {
                 continue;
             }
 
-            printf("Print VM %s to %s\n", numbers[0], numbers[1]);
+            printf("VM %s to %s : \n", numbers[0], numbers[1]);
+            print_vm(atoi(numbers[0]), atoi(numbers[1]));
 
         } else if(line[0] == 'E') {
         //Delete a VM
@@ -55,7 +58,7 @@ void read_transaction_file(char * path) {
                 continue;
             }
 
-            printf("Delete VM %s.\n", arguments[1]);
+            delete_vm(atoi(arguments[1]));
 
         } else if(line[0] == 'X') {
         //Execute binary code on the VM
@@ -67,7 +70,6 @@ void read_transaction_file(char * path) {
             arguments[2] = strtok(NULL, " ");
 
             printf("Execute binary code on VM %s.\n", arguments[1]);
-
         }
     }
 } 
