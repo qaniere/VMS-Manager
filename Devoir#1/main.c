@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "file_reader.c"
+#include "scheduler.c" //Reading files and manages threads  
 
 int main(int argc, char *argv[]) {
 

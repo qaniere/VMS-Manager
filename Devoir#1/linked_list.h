@@ -17,10 +17,10 @@ typedef struct VM_INFO {
 } VM_INFO;
 
 //Add a vm to the list
-void add_vm();
+void *add_vm();
 
 //Print the range of VMs in the list
-void print_vm(int start, int end);
+void *print_vm(void *numbers);
 
 //Delete a VM from the list
 void delete_vm(int number);

@@ -1,10 +1,24 @@
-#include <stddef.h>
+#include <stddef.h> // For use of NULL
+#include <semaphore.h> // For implementation of semaphores
+
 #include "linked_list.h"
 
 int vm_count = 0;
 struct VM_NODE *head = NULL;
 
-void add_vm() {
+sem_t list_semaphore;
+int was_list_semaphores_initialized = 0;
+
+sem_t stdout_semaphore;
+int was_stdout_semaphores_initialized = 0;
+
+void *add_vm() {
+
+    if(was_list_semaphores_initialized == 0) {
+        sem_init(&list_semaphore, 0, 1);
+        was_list_semaphores_initialized = 1;
+    }
+
     vm_count++;
 
     struct VM_NODE *new_vm = NULL;
@@ -29,6 +43,9 @@ void add_vm() {
 
     new_vm->vm_infos = new_vm_infos;
 
+
+    sem_wait(&list_semaphore); //Starting to use semaphores to protect the linked list
+
     if(head == NULL) {
     //If the head is null, then this is the first node of the list
         head = new_vm;
@@ -42,10 +59,33 @@ void add_vm() {
 
         list->next = new_vm;
     }
+
+    sem_post(&list_semaphore); //End of the list usage
 }
 
-void print_vm(int start, int end) {
+void *print_vm(void *range) {
+
+    RANGE numbers = *(RANGE *)range;
+    int start = numbers.start;
+    int end = numbers.end;
+
     struct VM_NODE *list = head;
+
+    if(was_list_semaphores_initialized == 0) {
+        sem_init(&list_semaphore, 0, 1);
+        was_list_semaphores_initialized = 1;
+    }
+
+    if(was_stdout_semaphores_initialized == 0) {
+        sem_init(&stdout_semaphore, 0, 1);
+        was_stdout_semaphores_initialized = 1;
+    }
+
+
+    sem_wait(&list_semaphore); //Starting to use semaphores to protect the linked list
+    sem_wait(&stdout_semaphore); //Starting to use semaphores to protect the stdout
+
+    printf("VMs from %d to %d:\n", start, end);
 
     while(list != NULL) {
     //Iterate through the list until the end
@@ -57,6 +97,9 @@ void print_vm(int start, int end) {
 
         list = list->next;
     }
+
+    sem_post(&list_semaphore); //End of the list usage
+    sem_post(&stdout_semaphore); //End of the stdout usage
 }
 
 void delete_vm(int number) {
@@ -95,4 +138,16 @@ int is_vm_exists(int number) {
     }
 
     return 0;
+}
+
+void *execute(void *args) {
+
+    if(was_stdout_semaphores_initialized == 0) {
+        sem_init(&stdout_semaphore, 0, 1);
+        was_stdout_semaphores_initialized = 1;
+    }
+
+    sem_wait(&stdout_semaphore); //Starting to use semaphores to protect the stdout
+    printf("Executing binary file on VM #%c\n", *(char *)args);
+    sem_post(&stdout_semaphore); //End of the stdout usage
 }
