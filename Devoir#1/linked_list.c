@@ -3,8 +3,11 @@
 
 #include "linked_list.h"
 
-int vm_count = 0;
 struct VM_NODE *head = NULL;
+
+int vm_count = 0;
+sem_t vm_count_semaphore;
+int was_vm_count_semaphore_initialized = 0;
 
 sem_t list_semaphore;
 int was_list_semaphores_initialized = 0;
@@ -19,7 +22,14 @@ void *add_vm() {
         was_list_semaphores_initialized = 1;
     }
 
+    if(was_vm_count_semaphore_initialized == 0) {
+        sem_init(&vm_count_semaphore, 0, 1);
+        was_vm_count_semaphore_initialized = 1;
+    }
+
+    sem_wait(&vm_count_semaphore);
     vm_count++;
+    sem_post(&vm_count_semaphore);
 
     struct VM_NODE *new_vm = NULL;
     new_vm = malloc(sizeof(struct VM_NODE));
@@ -85,6 +95,7 @@ void *print_vm(void *range) {
     sem_wait(&list_semaphore); //Starting to use semaphores to protect the linked list
     sem_wait(&stdout_semaphore); //Starting to use semaphores to protect the stdout
 
+    printf("\e[1;1H\e[2J"); //Clear the screen
     printf("VMs from %d to %d:\n", start, end);
 
     while(list != NULL) {
@@ -100,6 +111,8 @@ void *print_vm(void *range) {
 
     sem_post(&list_semaphore); //End of the list usage
     sem_post(&stdout_semaphore); //End of the stdout usage
+
+    free(range);
 }
 
 void delete_vm(int number) {
@@ -147,7 +160,12 @@ void *execute(void *args) {
         was_stdout_semaphores_initialized = 1;
     }
 
+    NUMBER number = *(NUMBER *)args;
+    int vm_number = number.number;
+
     sem_wait(&stdout_semaphore); //Starting to use semaphores to protect the stdout
-    printf("Executing binary file on VM #%c\n", *(char *)args);
+    printf("Executing code into VM #%d...\n", vm_number);
     sem_post(&stdout_semaphore); //End of the stdout usage
+
+    free(args);
 }

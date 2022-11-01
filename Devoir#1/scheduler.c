@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h> //For file reading
 #include <string.h> //For string manipulation
 #include <pthread.h> //For thread management
@@ -28,6 +29,8 @@ void read_transaction_file(char * path) {
     
     while(getline(&line, &len, fd) != -1) {
 
+        sleep(1);
+
         line_count++;
 
         if(line[0] == 'A') {
@@ -42,7 +45,7 @@ void read_transaction_file(char * path) {
             }
 
         } else if(line[0] == 'L') {
-        //Print VM
+        //Print a range of VMs
 
             char *arguments[2];
             char *numbers[2];
@@ -104,8 +107,11 @@ void read_transaction_file(char * path) {
                 continue;
             }
 
+            NUMBER *number = malloc(sizeof(NUMBER));
+            number->number = atoi(arguments[1]);
+
             if(!is_thread_list_full()) {
-                pthread_create(&threads[thread_count], NULL, execute, (void *) arguments[1]);
+                pthread_create(&threads[thread_count], NULL, execute, (void *) number);
                 thread_count++;
             } else {
                 printf("Error - the thread list is full. The program will exit.");
@@ -113,4 +119,13 @@ void read_transaction_file(char * path) {
             }
         }
     }
+
+    free(line);
+    fclose(fd);
+    //Close file descriptor
+
+    for(int i = 0; i < thread_count; i++) {
+        pthread_join(threads[i], NULL);
+    }
+    //Wait for all threads to finish
 }
