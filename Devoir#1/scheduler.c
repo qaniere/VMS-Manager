@@ -1,20 +1,29 @@
-#include <stdio.h>
-#include <unistd.h>
+#include <unistd.h> //For sleep system call
 #include <stdlib.h> //For file reading
 #include <string.h> //For string manipulation
 #include <pthread.h> //For thread management
-#include <semaphore.h> //For mutual exclusion
 
 #include "scheduler.h" //Header file
 #include "linked_list.c" //For linked list manipulations
 
 int thread_count = 0;
 pthread_t threads[MAX_THREADS];
+//The array of threads, each slot contains a thread ID
 
+/*
+* Return whether the thread list is full or not
+* @param void
+* @return 1 if the thread list is full, 0 otherwise
+*/
 int is_thread_list_full() {
     return thread_count == MAX_THREADS;
 }
 
+/*
+* Read the transaction file and call the function in threads to process the transactions
+* @param path The path of the transaction file
+* @return void
+*/
 void read_transaction_file(char * path) {
     FILE *fd = fopen(path, "r");
 
@@ -29,17 +38,20 @@ void read_transaction_file(char * path) {
     
     while(getline(&line, &len, fd) != -1) {
 
-        sleep(1);
+        sleep(1); 
+        //Sleep 1 second to avoid collision between threads
 
         line_count++;
 
         if(line[0] == 'A') {
-        // Add transaction
+        //Add a VM
 
             if(!is_thread_list_full()) {
                 pthread_create(&threads[thread_count], NULL, add_vm, NULL);
                 thread_count++;
+
             } else {
+            //The transaction file required to create more threads than the maximum number of threads
                 printf("Error - the thread list is full. The program will exit.");
                 exit(1);
             }
@@ -61,6 +73,7 @@ void read_transaction_file(char * path) {
                 continue;
             }
 
+            //Use a struct to pass the range to the thread
             RANGE *range = malloc(sizeof(RANGE));
             range->start = atoi(numbers[0]);
             range->end = atoi(numbers[1]);
@@ -68,7 +81,9 @@ void read_transaction_file(char * path) {
             if(!is_thread_list_full()) {
                 pthread_create(&threads[thread_count], NULL, print_vm, (void *) range);
                 thread_count++;
+
             } else {
+            //The transaction file required to create more threads than the maximum number of threads
                 printf("Error - the thread list is full. The program will exit.");
                 exit(1);
             }
@@ -86,10 +101,22 @@ void read_transaction_file(char * path) {
                 continue;
             }
 
-            delete_vm(atoi(arguments[1]));
+            struct NUMBER *number = malloc(sizeof(NUMBER));
+            number->number = atoi(arguments[1]);
+
+            if(!is_thread_list_full()) {
+                pthread_create(&threads[thread_count], NULL, delete_vm, (void *) number);
+                thread_count++;
+
+            } else {
+            //The transaction file required to create more threads than the maximum number of threads
+                printf("Error - the thread list is full. The program will exit.");
+                exit(1);
+            }
 
         } else if(line[0] == 'X') {
         //Execute binary code on the VM
+        //(This function is more a proof of concept than a real function)
 
             char *arguments[3];
 
@@ -103,17 +130,21 @@ void read_transaction_file(char * path) {
             }
 
             if(!is_vm_exists(atoi(arguments[1]))) {
-                printf("Warning : VM %d does not exist on line %d\n", atoi(arguments[1]), line_count);
+                printf("Warning : VM %d does not exist", atoi(arguments[1]));
                 continue;
             }
 
+            //Use a struct to pass the VM number and the binary code to the thread
             NUMBER *number = malloc(sizeof(NUMBER));
             number->number = atoi(arguments[1]);
 
             if(!is_thread_list_full()) {
                 pthread_create(&threads[thread_count], NULL, execute, (void *) number);
                 thread_count++;
+
             } else {
+            //The transaction file required to create more threads than the maximum number of threads
+
                 printf("Error - the thread list is full. The program will exit.");
                 exit(1);
             }

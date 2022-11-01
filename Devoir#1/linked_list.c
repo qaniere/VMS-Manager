@@ -1,13 +1,15 @@
-#include <stddef.h> // For use of NULL
-#include <semaphore.h> // For implementation of semaphores
+#include <stddef.h> //For use of NULL
+#include <semaphore.h> //For implementation of semaphores
 
 #include "linked_list.h"
 
 struct VM_NODE *head = NULL;
+//The head of the linked list
 
 int vm_count = 0;
 sem_t vm_count_semaphore;
 int was_vm_count_semaphore_initialized = 0;
+//The number of VMs in the linked list and the protection semaphore
 
 sem_t list_semaphore;
 int was_list_semaphores_initialized = 0;
@@ -15,6 +17,9 @@ int was_list_semaphores_initialized = 0;
 sem_t stdout_semaphore;
 int was_stdout_semaphores_initialized = 0;
 
+/*
+* Add a VM to the linked list
+*/
 void *add_vm() {
 
     if(was_list_semaphores_initialized == 0) {
@@ -26,6 +31,7 @@ void *add_vm() {
         sem_init(&vm_count_semaphore, 0, 1);
         was_vm_count_semaphore_initialized = 1;
     }
+    //Initialize the semaphores if they were not initialized
 
     sem_wait(&vm_count_semaphore);
     vm_count++;
@@ -38,11 +44,13 @@ void *add_vm() {
 
     struct VM_INFO *new_vm_infos = NULL;
     new_vm_infos = malloc(sizeof(struct VM_INFO));
+    //Allocate memory for the VM infos
 
     int vm_number = START_NUMBER_VM_NUMBER;
     while(is_vm_exists(vm_number)) {
         vm_number++;
     }
+    //Find the first available VM number
 
     new_vm_infos->number = vm_number;
     new_vm_infos->busy = 0;
@@ -52,7 +60,6 @@ void *add_vm() {
     //Allocate memory for the VM infos and set the values
 
     new_vm->vm_infos = new_vm_infos;
-
 
     sem_wait(&list_semaphore); //Starting to use semaphores to protect the linked list
 
@@ -73,6 +80,10 @@ void *add_vm() {
     sem_post(&list_semaphore); //End of the list usage
 }
 
+/*
+* Print a range of VMs
+* @param *numbers The range of numbers, must be a RANGE struct
+*/
 void *print_vm(void *range) {
 
     RANGE numbers = *(RANGE *)range;
@@ -90,7 +101,7 @@ void *print_vm(void *range) {
         sem_init(&stdout_semaphore, 0, 1);
         was_stdout_semaphores_initialized = 1;
     }
-
+    //Initialize the semaphores if they were not initialized
 
     sem_wait(&list_semaphore); //Starting to use semaphores to protect the linked list
     sem_wait(&stdout_semaphore); //Starting to use semaphores to protect the stdout
@@ -115,13 +126,28 @@ void *print_vm(void *range) {
     free(range);
 }
 
-void delete_vm(int number) {
+/*
+* Delete a VM from the linked list
+* @param number The number of the VM to delete
+*/
+void *delete_vm(void *number) {
     struct VM_NODE *list = head;
     struct VM_NODE *previous = NULL;
 
+    if(was_list_semaphores_initialized == 0) {
+        sem_init(&list_semaphore, 0, 1);
+        was_list_semaphores_initialized = 1;
+    }
+    //Initialize the semaphores if they were not initialized
+    
+    NUMBER s_number = *(NUMBER *)number;
+    int vm_number = s_number.number;
+
+    sem_wait(&list_semaphore); //Starting to use semaphores to protect the linked list
+
     while(list != NULL) {
     //Iterate through the list until the end
-        if(list->vm_infos->number == number) {
+        if(list->vm_infos->number == vm_number) {
             if(previous == NULL) {
             //If the previous node is null, then this is the first node of the list
                 head = list->next;
@@ -137,8 +163,15 @@ void delete_vm(int number) {
         previous = list;
         list = list->next;
     }
+
+    sem_post(&list_semaphore); //End of the list usage
+    free(number);
 }
 
+/*Return whether a VM exists or not
+* @param number The number of the VM to check
+* @return 1 if the VM exists, 0 if not
+*/
 int is_vm_exists(int number) {
     struct VM_NODE *list = head;
 
@@ -153,6 +186,10 @@ int is_vm_exists(int number) {
     return 0;
 }
 
+/*
+* Dummy function that suppose to execute binary code
+* @param *args The number of the VM to execute. Must be a NUMBER struct
+*/
 void *execute(void *args) {
 
     if(was_stdout_semaphores_initialized == 0) {
@@ -168,4 +205,22 @@ void *execute(void *args) {
     sem_post(&stdout_semaphore); //End of the stdout usage
 
     free(args);
+}
+
+/*
+* Free the memory of the linked list
+*/ 
+void clean_linked_list() {
+    struct VM_NODE *list = head;
+    struct VM_NODE *next = NULL;
+
+    while(list != NULL) {
+        next = list->next;
+        free(list->vm_infos);
+        free(list);
+        list = next;
+    }
+
+    head = NULL;
+    free(head);
 }

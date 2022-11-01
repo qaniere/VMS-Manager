@@ -9,7 +9,7 @@ typedef struct RANGE {
     int start;
     int end;
 } RANGE;
-//Use to pass the range of VMs to a pthread
+//Use to pass a range of VMs to a pthread
 
 typedef struct NUMBER {
     int number;
@@ -17,10 +17,18 @@ typedef struct NUMBER {
 //Use to pass the VM number of a VM to a pthread
 
 
-//Read the transaction file and call the functioneed to create more threads, it will n to process the transactions
-void read_transaction_file(char * path);
-
-//Return 1 if the thread list is full, 0 otherwise
+/*
+* Return whether the thread list is full or not
+* @param void
+* @return 1 if the thread list is full, 0 otherwise
+*/
 int is_thread_list_full();
+
+/*
+* Read the transaction file and call the function in threads to process the transactions
+* @param path The path of the transaction file
+* @return void
+*/
+void read_transaction_file(char * path);
 
 #endif

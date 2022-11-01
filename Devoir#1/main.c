@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include "scheduler.c" //Reading files and manages threads  
+#include <stdio.h> //For using standart output
+#include "scheduler.c" //For reading files and manages threads  
 
 int main(int argc, char *argv[]) {
 
@@ -10,4 +10,10 @@ int main(int argc, char *argv[]) {
     } 
 
     read_transaction_file(argv[1]);
+    //Read the transaction file and call the function in threads to process the transactions
+
+    clean_linked_list();
+    //Free all the allocated memory
+
+    return 0;
 }
