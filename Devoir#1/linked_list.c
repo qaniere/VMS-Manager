@@ -1,3 +1,7 @@
+//SIF1015 - Fall 2022
+//Made by Julio Bangadebia and Quentin Anière
+
+
 #include <stddef.h> //For use of NULL
 #include <semaphore.h> //For implementation of semaphores
 
