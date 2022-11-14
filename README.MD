@@ -4,6 +4,8 @@
 
 [Plan de cours](./plan_de_cours.pdf)
 
+[Lien du répertoire FTP](http://dmiftp.uqtr.ca/Public/FMeunier/sif1015/)
+
 L'étudiant se familiarise avec les concepts fondamentaux des systèmes d'exploitation : structure générale
 d'un système d'exploitation, gestion des différents sous-systèmes : processus/thread, communication interprocessus/thread, systèmes de fichiers, accès réseau, gestion de la mémoire.
 
