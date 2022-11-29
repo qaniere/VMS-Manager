@@ -1,3 +1,9 @@
+#include <stdio.h> //For io related functions
+#include <unistd.h> //For sleep system call
+#include <stdlib.h> //For file reading
+#include <string.h> //For string manipulation
+#include <pthread.h> //For thread management
+
 #ifndef SCHDULER_H
 #define SCHDULER_H
 

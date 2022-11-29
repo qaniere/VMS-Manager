@@ -1,3 +1,6 @@
+#include <stddef.h> //For use of NULL
+#include <semaphore.h> //For implementation of semaphores
+
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 

@@ -1,12 +1,6 @@
 //SIF1015 - Fall 2022
 //Made by Julio Bangadebia and Quentin Anière
 
-#include <stdio.h> //For io related functions
-#include <unistd.h> //For sleep system call
-#include <stdlib.h> //For file reading
-#include <string.h> //For string manipulation
-#include <pthread.h> //For thread management
-
 #include "scheduler.h" //Header file
 #include "linked_list.c" //For linked list manipulations
 
