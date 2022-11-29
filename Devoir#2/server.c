@@ -2,7 +2,7 @@
 //Made by Julio Bangadebia and Quentin Anière
 
 #include <stdio.h> //For using standart output
-#include "scheduler.c" //For reading files and manages threads  
+#include "server/scheduler.c" //For reading files and manages threads  
 
 int main(int argc, char *argv[]) {
 
