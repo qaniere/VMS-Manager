@@ -2,7 +2,7 @@
 //Made by Julio Bangadebia and Quentin Anière
 
 #include "scheduler.h" //Header file
-#include "linked_list.c" //For linked list manipulations
+#include "vms_linked_list.c" //For linked list manipulations
 
 int thread_count = 0;
 pthread_t threads[MAX_THREADS];

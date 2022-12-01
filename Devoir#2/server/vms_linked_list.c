@@ -1,7 +1,7 @@
 //SIF1015 - Fall 2022
 //Made by Julio Bangadebia and Quentin Anière
 
-#include "linked_list.h"
+#include "vms_linked_list.h"
 
 struct VM_NODE *head = NULL;
 //The head of the linked list
