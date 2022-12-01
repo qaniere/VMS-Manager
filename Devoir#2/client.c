@@ -14,4 +14,12 @@ int main(int argc, char *argv[]) {
         server_ip = atoi(argv[1]);
     }
 
+    init_gui(); //Initialize GUI
+
+    //Socket thread must go here
+
+    gui_loop(); //Start GUI loop
+
+    gui_cleanup();
+    //Once the GUI loop is over, clean up the GUI
 }
