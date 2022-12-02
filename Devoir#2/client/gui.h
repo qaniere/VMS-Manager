@@ -1,6 +1,8 @@
 #include <string.h>
 #include <ncurses.h>
 
+#include "popups.c"
+
 #ifndef GUI_H
 #define GUI_H
 
@@ -38,5 +40,10 @@ void display_menu();
 * This function update the cursor of the menu
 */
 void update_cursor();
+
+/*
+* This function display the current VMS number in the left window
+*/
+void display_current_vms();
 
 #endif

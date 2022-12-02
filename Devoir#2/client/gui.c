@@ -1,18 +1,27 @@
 #include "gui.h"
 
 int lines, columns;
+//Contains LINES and COLS from ncurses.h
+
+int current_vms = -1;
+//Contains the number of the selected VMS
 
 char server_ip[16] = " ";
-WINDOW *windows[2] = {NULL, NULL};
+//Contains the IP of the server in a string
 
-char *menus_choices[4] = {
+WINDOW *windows[2] = {NULL, NULL};
+//Contains the two windows [0] is the left window, [1] is the right window
+
+char *menus_choices[] = {
     "Add a VMS",
     "List VMS",
     "Delete a VMS",
-    "Execute binary code on VMS"
+    "Execute binary code on VMS",
+    "Choose a VMS",
+    "Send the transaction"
 };
 
-int cursor_y = 0;
+int cursor_y = -1;
 int current_choice = 0;
 
 /*
@@ -31,7 +40,7 @@ void init_gui() {
     lines = LINES;
     columns = COLS;
 
-    cursor_y = 0 + 4;
+    cursor_y = 0 + 3;
     
     WINDOW *left_window = newwin(lines, columns / 2, 0, 0);
     WINDOW *right_window = newwin(lines, columns / 2, 0, (columns / 2) -1);
@@ -58,6 +67,7 @@ void init_gui() {
     update_cursor();
 
     display_server_ip();
+    display_current_vms();
     refresh();
 }
 
@@ -78,7 +88,7 @@ void gui_loop() {
             break;
 
         } else if(c == KEY_UP) {
-            if(cursor_y > 0 + 4) {
+            if(cursor_y > 3) {
                 cursor_y--;
                 current_choice--;
                 update_cursor();
@@ -86,17 +96,36 @@ void gui_loop() {
             }
 
         } else if(c == KEY_DOWN) {
-
-            if(cursor_y < 0 + 4 + 3) {
+            if(cursor_y < 8) {
                 cursor_y++;
                 current_choice++;
                 update_cursor();
             }
 
         } else if(c == 10) {
+        //Enter key
             mvwprintw(windows[1], 2, 2, "                                         ");
             mvwprintw(windows[1], 2, 2, "Action: %s", menus_choices[current_choice]);
             wrefresh(windows[1]);
+
+            if(current_choice == 0) {
+                // add_vms_popup();
+
+            } else if(current_choice == 1) {
+                // list_vms_popup();
+
+            } else if(current_choice == 2) {
+                // delete_vms_popup();
+
+            } else if(current_choice == 3) {
+                // execute_code_popup();
+
+            } else if(current_choice == 4) {
+                select_vms_number();
+                
+            } else if(current_choice == 5) {
+                // send_transaction_popup();
+            }
         }
 
         refresh();
@@ -142,11 +171,11 @@ void update_server_ip(uint32_t ip) {
 * This function display the menu in the left window
 */
 void display_menu() {
-    for(int i = 0; i < 4; i++) {
-        mvwprintw(windows[0], i + 4, 10, "                        ");
+    for(int i = 0; i < 6; i++) {
+        mvwprintw(windows[0], i + 3, 10, "                        ");
         //Clear the previous text
 
-        mvwprintw(windows[0], i + 4, 10, "%s", menus_choices[i]);
+        mvwprintw(windows[0], i + 3, 10, "%s", menus_choices[i]);
         wrefresh(windows[0]);
     }
 }
@@ -161,4 +190,21 @@ void update_cursor() {
 
     mvwprintw(windows[0], cursor_y, 8, ">");
     wrefresh(windows[0]);
+}
+
+/*
+* This function display the current VMS number in the left window
+*/
+void display_current_vms() {
+    mvwprintw(windows[0], lines - 3, 2, "                        ");
+    //Clear the previous text
+
+    if(current_vms == -1) {
+        mvwprintw(windows[0], lines - 3, 2, "Current VMS: None");
+        wrefresh(windows[0]);
+
+    } else {
+        mvwprintw(windows[0], lines - 3, 2, "Current VMS: %d", current_vms);
+        wrefresh(windows[0]);
+    }
 }
