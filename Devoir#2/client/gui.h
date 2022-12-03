@@ -42,8 +42,8 @@ void display_menu();
 void update_cursor();
 
 /*
-* This function display the current VMS number in the left window
+* This function display the client id in the bottom of the left window
 */
-void display_current_vms();
+void display_client_id();
 
 #endif

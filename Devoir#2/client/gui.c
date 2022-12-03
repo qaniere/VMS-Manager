@@ -3,7 +3,7 @@
 int lines, columns;
 //Contains LINES and COLS from ncurses.h
 
-int current_vms = -1;
+int client_id = -1;
 //Contains the number of the selected VMS
 
 char server_ip[16] = " ";
@@ -13,12 +13,12 @@ WINDOW *windows[2] = {NULL, NULL};
 //Contains the two windows [0] is the left window, [1] is the right window
 
 char *menus_choices[] = {
-    "Add a VMS",
-    "List VMS",
-    "Delete a VMS",
-    "Execute binary code on VMS",
-    "Choose a VMS",
-    "Send the transaction"
+    "1 - Add a VMS",
+    "2 - List VMS",
+    "3 - Delete a VMS",
+    "4 - Execute binary code on VMS",
+    "5 - Send the transaction",
+    "6 - Quit the program"
 };
 
 int cursor_y = -1;
@@ -67,7 +67,7 @@ void init_gui() {
     update_cursor();
 
     display_server_ip();
-    display_current_vms();
+    display_client_id();
     refresh();
 }
 
@@ -109,22 +109,21 @@ void gui_loop() {
             wrefresh(windows[1]);
 
             if(current_choice == 0) {
-                // add_vms_popup();
-
+                // add_vms();
             } else if(current_choice == 1) {
-                // list_vms_popup();
+                // list_vms();
 
             } else if(current_choice == 2) {
-                // delete_vms_popup();
+                // delete_vms();
 
             } else if(current_choice == 3) {
-                // execute_code_popup();
+                // execute_binary();
 
             } else if(current_choice == 4) {
-                select_vms_number();
-                
+                // send_transaction();
+
             } else if(current_choice == 5) {
-                // send_transaction_popup();
+                break;
             }
         }
 
@@ -193,18 +192,18 @@ void update_cursor() {
 }
 
 /*
-* This function display the current VMS number in the left window
+* This function display the client id in the bottom of the left window
 */
-void display_current_vms() {
+void display_client_id() {
     mvwprintw(windows[0], lines - 3, 2, "                        ");
     //Clear the previous text
 
-    if(current_vms == -1) {
-        mvwprintw(windows[0], lines - 3, 2, "Current VMS: None");
+    if(client_id == -1) {
+        mvwprintw(windows[0], lines - 3, 2, "Client ID: None");
         wrefresh(windows[0]);
 
     } else {
-        mvwprintw(windows[0], lines - 3, 2, "Current VMS: %d", current_vms);
+        mvwprintw(windows[0], lines - 3, 2, "Client ID: %d", client_id);
         wrefresh(windows[0]);
     }
 }
