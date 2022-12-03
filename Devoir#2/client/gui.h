@@ -2,6 +2,7 @@
 #include <ncurses.h>
 
 #include "popups.c"
+#include "transaction.c"
 
 #ifndef GUI_H
 #define GUI_H
@@ -45,5 +46,16 @@ void update_cursor();
 * This function display the client id in the bottom of the left window
 */
 void display_client_id();
+
+/*
+* Display current transaction in the right window
+*/
+void display_transaction();
+
+/*
+* This function redisplay everything, the menu, the cursor the client id, the server ip and
+* the windows border. This function is meant to be used when a popup is closed
+*/
+void redisplay_everything();
 
 #endif
