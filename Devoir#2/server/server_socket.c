@@ -17,9 +17,10 @@ void listen_for_clients(int server_socket, int port) {
 
     while (1) {
         struct sockaddr_in *client_address = malloc(sizeof(struct sockaddr_in));
-        socklen_t client_address_size = sizeof(struct sockaddr_in);
+        socklen_t client_address_size = sizeof(*client_address);
+        //Allocate memory for client address
 
-        int client_socket = accept(server_socket, (struct sockaddr *) client_address, &client_address_size);
+        int client_socket = accept(server_socket, (struct sockaddr *)client_address, &client_address_size);
         if (client_socket == -1) {
             perror("accept error");
             exit(1);
