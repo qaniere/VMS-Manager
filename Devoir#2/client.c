@@ -18,8 +18,6 @@ int main(int argc, char *argv[]) {
         server_ip_str = argv[1];
     }
 
-    printf("Server IP: %s\n", server_ip_str);
-
     int socket_fd = connect_to_server(server_ip, port);
     int client_id = get_client_id(socket_fd);
 
