@@ -31,7 +31,7 @@ void display_server_ip();
 /*
 * This function update the server_ip variable
 */
-void update_server_ip(uint32_t ip);
+void update_server_ip(char *ip);
 
 /*
 * This function display the menu in the left window

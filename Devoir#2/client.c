@@ -5,14 +5,20 @@ int main(int argc, char *argv[]) {
     uint16_t port;
     uint32_t server_ip;
 
+    char *server_ip_str = NULL;
+
     if(argc < 3) {
         port = DEFAULT_SERVER_PORT;
         server_ip = atoi(DEFAULT_SERVER_IP);
+        server_ip_str = DEFAULT_SERVER_IP;
 
     } else {
         port = atoi(argv[2]);
         server_ip = atoi(argv[1]);
+        server_ip_str = argv[1];
     }
+
+    printf("Server IP: %s\n", server_ip_str);
 
     int socket_fd = connect_to_server(server_ip, port);
     int client_id = get_client_id(socket_fd);
@@ -20,7 +26,7 @@ int main(int argc, char *argv[]) {
     init_gui(); //Initialize GUI
 
     update_client_id(client_id); 
-    update_server_ip(server_ip);
+    update_server_ip(server_ip_str);
 
     gui_loop(); //Start GUI loop
 

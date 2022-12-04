@@ -220,8 +220,8 @@ void display_server_ip() {
 /*
 * This function update the server_ip variable
 */
-void update_server_ip(uint32_t ip) {
-    sprintf(server_ip, "%" PRIu32, ip);
+void update_server_ip(char *ip) {
+    sprintf(server_ip, "%s", ip);
     //Convert the IP to a strinng
 } 
 
