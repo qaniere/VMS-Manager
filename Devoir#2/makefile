@@ -18,6 +18,11 @@ launch-client: vms-manager-client
 
 #Launch the client
 
+pdf:
+	pandoc -o manuel.pdf README.MD
+
+#Generate the pdf file from the README.MD file
+
 clean:
 	rm -f vms-manager-server vms-manager-client
 
