@@ -17,8 +17,6 @@ int main(int argc, char *argv[]) {
     int socket_fd = connect_to_server(server_ip, port);
     int client_id = get_client_id(socket_fd);
 
-    printf("Client ID: %d, Socket FD: %d\n", client_id, socket_fd);
-
     init_gui(); //Initialize GUI
 
     update_client_id(client_id); 

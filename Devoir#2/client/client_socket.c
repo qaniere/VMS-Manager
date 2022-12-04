@@ -37,15 +37,12 @@ int connect_to_server(u_int32_t server_address, int port) {
 */
 int get_client_id(int socket_fd) {
     
-        char *buffer = malloc(sizeof(char) * 10);
-        int read_result = read(socket_fd, buffer, 10);
-        if (read_result == -1) {
-            perror("read error");
-            exit(1);
-        }
-    
-        int client_id = atoi(buffer);
-        free(buffer);
-    
-        return client_id;
+    int received_id = 0;
+    int read_result = read(socket_fd, &received_id, sizeof(int));
+    if (read_result == -1) {
+        perror("read error");
+        exit(1);
+    }
+
+    return ntohl(received_id);
 }

@@ -18,6 +18,7 @@ void listen_for_clients(int server_socket, int port) {
     while (1) {
         struct sockaddr_in *client_address = malloc(sizeof(struct sockaddr_in));
         socklen_t client_address_size = sizeof(struct sockaddr_in);
+
         int client_socket = accept(server_socket, (struct sockaddr *) client_address, &client_address_size);
         if (client_socket == -1) {
             perror("accept error");
@@ -27,8 +28,10 @@ void listen_for_clients(int server_socket, int port) {
         clients[client_count] = client_socket;
         client_count++;
 
-        printf("New client connected. ID = %d", client_count);
-        write(client_socket, &client_count, sizeof(int)); 
+        int sendable_client_count = htonl(client_count);
+
+        printf("New client connected. ID = %d\n", client_count);
+        write(client_socket, &sendable_client_count, sizeof(sendable_client_count)); 
         //Send the client its ID
     }
 }

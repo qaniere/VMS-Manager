@@ -1,5 +1,6 @@
 #include <string.h>
 #include <ncurses.h>
+#include <inttypes.h>
 
 #include "popups.c"
 #include "transaction.c"
