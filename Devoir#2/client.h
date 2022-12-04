@@ -8,11 +8,12 @@
 #include <netinet/in.h>
 
 #include "client/gui.c"
+#include "client/client_socket.c"
 
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#define DEFAULT_SERVER_PORT 8080
+#define DEFAULT_SERVER_PORT 1234
 #define DEFAULT_SERVER_IP "127.0.0.1"
 
 

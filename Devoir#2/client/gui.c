@@ -76,9 +76,6 @@ void init_gui() {
     display_server_ip();
     display_client_id();
     refresh();
-
-    transaction = createTransaction(client_id);
-    //Will be removed later when socket will be implemented
 }
 
 /*
@@ -87,10 +84,19 @@ void init_gui() {
 void gui_loop() {
     while(1) {
 
+        display_client_id();
+        display_server_ip();
+        //Display the client ID and the server IP
+
         wrefresh(windows[0]);
         wrefresh(windows[1]);
         //Refresh windows
 
+        if(transaction == NULL) {
+            transaction = malloc(sizeof(Transaction));
+            transaction->clientID = client_id;
+        }
+    
         int c = getch(); //Get user input
         if(c == 'q' || c == 'Q') {
             break;
@@ -217,7 +223,6 @@ void display_server_ip() {
 void update_server_ip(uint32_t ip) {
     sprintf(server_ip, "%d.%d.%d.%d", (ip >> 24) & 0xFF, (ip >> 16) & 0xFF, (ip >> 8) & 0xFF, ip & 0xFF);
     //Convert the IP to a strinng
-    display_server_ip();
 } 
 
 /*
@@ -317,4 +322,11 @@ void redisplay_everything() {
     refresh();
     wrefresh(windows[0]);
     wrefresh(windows[1]);
+}
+
+/*
+* Update the client id global var
+*/
+void update_client_id(int id) {
+    client_id = id;
 }

@@ -58,4 +58,9 @@ void display_transaction();
 */
 void redisplay_everything();
 
+/*
+* Update the client id global var
+*/
+void update_client_id(int id);
+
 #endif

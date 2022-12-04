@@ -14,9 +14,15 @@ int main(int argc, char *argv[]) {
         server_ip = atoi(argv[1]);
     }
 
+    int socket_fd = connect_to_server(server_ip, port);
+    int client_id = get_client_id(socket_fd);
+
+    printf("Client ID: %d, Socket FD: %d\n", client_id, socket_fd);
+
     init_gui(); //Initialize GUI
 
-    //Socket thread must go here
+    update_client_id(client_id); 
+    update_server_ip(server_ip);
 
     gui_loop(); //Start GUI loop
 
