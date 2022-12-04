@@ -92,7 +92,7 @@ void gui_loop() {
         //Refresh windows
 
         int c = getch(); //Get user input
-        if(c == 'q') {
+        if(c == 'q' || c == 'Q') {
             break;
 
         } else if(c == KEY_UP) {
@@ -127,14 +127,16 @@ void gui_loop() {
 
             } else if(current_choice == 1) {
             //List VMS
-                int *range = ask_vm_range();
+                int *range = ask_vm_range("Display VMS", "Enter the range of VMS to display");
                 char *operation = malloc(10);
                 //Create a string that will contain the operation
 
-                sprintf(operation, "L %d-%d", range[0], range[1]);
-                addOperationToTransaction(transaction, operation);
-                display_transaction();
-                //Add the operation to the transaction and display it
+                if(range[0] != 0 && range[1] != 0) {
+                    sprintf(operation, "L %d-%d", range[0], range[1]);
+                    addOperationToTransaction(transaction, operation);
+                    display_transaction();
+                    //Add the operation to the transaction and display it
+                }
 
                 free(operation);
                 redisplay_everything();
@@ -142,10 +144,33 @@ void gui_loop() {
                 //because the popup may have deleted some text
 
             } else if(current_choice == 2) {
-                // delete_vms();
+                int vms_to_delete = ask_vm_number("Delete a VMS", "Enter the VMS number to delete");
+                char *operation = malloc(10);
+
+                if(vms_to_delete != 0) {
+                    sprintf(operation, "D %d", vms_to_delete);
+                    addOperationToTransaction(transaction, operation);
+                    display_transaction();
+                }
+
+                free(operation);
+                redisplay_everything();
 
             } else if(current_choice == 3) {
-                // execute_binary();
+                int vms_to_execute = ask_vm_number("Execute binary code", "Enter the VMS number to execute the binary code");
+                char *filename = ask_string("Enter filename", "Enter the filename of the binary code to execute");
+
+                char *operation = malloc(sizeof(char) * (strlen(filename) + 20));
+
+                if(vms_to_execute != 0) {
+                    sprintf(operation, "E %d %s", vms_to_execute, filename);
+                    addOperationToTransaction(transaction, operation);
+                    display_transaction();
+                }
+
+                free(operation);
+                free(filename);
+                redisplay_everything();
 
             } else if(current_choice == 4) {
                 // send_transaction();
