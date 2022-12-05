@@ -1,3 +1,6 @@
+//SIF1015 - Fall 2022
+//Made by Julio Bangadebia and Quentin Anière
+
 #include <stdio.h> //For io related functions
 #include <unistd.h> //For sleep system call
 #include <stdlib.h> //For file reading

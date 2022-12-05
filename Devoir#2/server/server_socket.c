@@ -1,13 +1,18 @@
+//SIF1015 - Fall 2022
+//Made by Julio Bangadebia and Quentin Anière
+
 #include "server_socket.h"
 
 /*
 * Listen to client data
-* @param client_socket: client socket
+* Must be called in a thread
+* @param args: a ThreadsArgs struct
 */
 void *client_handler(void *args) {
     ThreadArgs *thread_args = (ThreadArgs *) args;
     int client_socket = thread_args->socket_fd;
     int client_id = thread_args->client_id;
+    //Cast the args to their correct type
     
     int bytes;
     char buffer[1024];
@@ -18,11 +23,15 @@ void *client_handler(void *args) {
     
     if (bytes == 0) {
         printf("Client %d disconnected\n", client_id);
+        close(client_socket);
 
     } else if (bytes == -1) {
         perror("recv failed");
+        close(client_socket);
     }
     
+    free(thread_args);
+    client_count--;
     return 0;
 }
 
@@ -30,12 +39,13 @@ void *client_handler(void *args) {
 * This function is used to listen for new connections.
 * it will add any new clients to the clients array.
 * @param server_socket the socket to listen on.
+* @param port the port to listen on.
 */
 void listen_for_clients(int server_socket, int port) {
 
     int listen_result = listen(server_socket, 10);
     if (listen_result == -1) {
-        perror("listen");
+        perror("listen errror");
         exit(1);
     }
 
@@ -54,10 +64,12 @@ void listen_for_clients(int server_socket, int port) {
 
         clients[client_count] = client_socket;
         client_count++;
+        client_id_count++;
+        //The count is the capacity of the array, the id is the client id
 
-        int sendable_client_count = htonl(client_count);
+        int sendable_client_count = htonl(client_id_count);
 
-        printf("New client connected. ID = %d\n", client_count);
+        printf("New client connected. ID = %d\n", client_id_count);
         write(client_socket, &sendable_client_count, sizeof(sendable_client_count)); 
         //Send the client its ID
 

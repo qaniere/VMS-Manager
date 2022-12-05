@@ -1,3 +1,6 @@
+//SIF1015 - Fall 2022
+//Made by Julio Bangadebia and Quentin Anière
+
 #include "popups.h"
 
 /*
@@ -14,8 +17,6 @@ WINDOW *create_popup(int start_y, int start_x, int end_y, int end_x, char *title
     WINDOW *popup = newwin(start_y, start_x, end_y, end_x);
     box(popup, 0, 0);
     //Create a window with a border
-
-    
 
     mvwprintw(popup, 0, 2, title);
     //Print the title of the popup onto the border
@@ -36,7 +37,7 @@ int *ask_vm_range(char *title, char *message) {
    static int result[2] = {0, 0};
 
     WINDOW *popup = create_popup(LINES / 2, COLS /2, LINES /4, COLS /4, title);
-    //Create a popup window
+    //Create a popup window (centered)
     
     echo(); 
     //Enable keyboard input
@@ -92,7 +93,7 @@ int ask_vm_number(char *title, char *message) {
     //Clear the input buffer
 
     WINDOW *popup = create_popup(LINES / 2, COLS /2, LINES /4, COLS /4, title);
-    //Create a popup window
+    //Create a popup window (centered)
     
     echo(); 
     //Enable keyboard input
@@ -139,7 +140,7 @@ char *ask_string(char *title, char *message) {
     //Clear the input buffer
 
     WINDOW *popup = create_popup(LINES / 2, COLS /2, LINES /4, COLS /4, title);
-    //Create a popup window
+    //Create a popup window (centered)
     
     echo(); 
     //Enable keyboard input

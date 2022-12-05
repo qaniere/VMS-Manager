@@ -1,3 +1,6 @@
+//SIF1015 - Fall 2022
+//Made by Julio Bangadebia and Quentin Anière
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,6 +28,12 @@ int connect_to_server(u_int32_t server_ip, int server_port);
 int get_client_id(int socket_fd);
 
 
+/*
+* This function is used to send the client transaction to the server.
+* @param socket_fd: the socket fd of the client.
+* @param client_id: the client ID (given by the server).
+* @param transaction: the string of operations.
+*/
 void send_transaction(int socket_fd, int client_id, char* operations);
 
 #endif

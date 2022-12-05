@@ -1,3 +1,6 @@
+//SIF1015 - Fall 2022
+//Made by Julio Bangadebia and Quentin Anière
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

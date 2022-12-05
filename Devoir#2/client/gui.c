@@ -1,3 +1,6 @@
+//SIF1015 - Fall 2022
+//Made by Julio Bangadebia and Quentin Anière
+
 #include "gui.h"
 
 int lines, columns;
@@ -30,6 +33,7 @@ int current_choice = 0;
 //Contains the current choice of the main menu and the cursor position
 
 int socket_fd = -1;
+//Contains the socket fd
 
 /*
 * This function initializes the ncurses library and creates two windows
@@ -63,7 +67,7 @@ void init_gui() {
 
     mvwprintw(left_window, 0, 2, "Transmission");
     mvwprintw(right_window, 0, 2, "Reception");
-    //Creat
+    //Title of the windows
 
     noecho();
     //Disable echo of user input
@@ -165,8 +169,8 @@ void gui_loop() {
                 redisplay_everything();
 
             } else if(current_choice == 3) {
-                int vms_to_execute = ask_vm_number("Execute binary code", "Enter the VMS number to execute the binary code");
-                char *filename = ask_string("Enter filename", "Enter the filename of the binary code to execute");
+                int vms_to_execute = ask_vm_number("Execute binary code", "Enter the VMS number to execute to");
+                char *filename = ask_string("Enter filename", "Enter the filename :");
 
                 char *operation = malloc(sizeof(char) * (strlen(filename) + 20));
 
@@ -184,14 +188,12 @@ void gui_loop() {
                 send_transaction(socket_fd, client_id, transaction->operations);
                 transaction = createTransaction(client_id);
 
-                wclear(windows[1]);
+                wclear(windows[1]); //Clear the previous transaction
                 redisplay_everything();
 
             } else if(current_choice == 5) {
                 break;
 
-            } else if(current_choice == 5) {
-                break;
             }
         }
 
@@ -207,7 +209,7 @@ void gui_cleanup() {
 }
 
 /*
-* This function prints a message in the window
+* This function display the server ip the bottom of the left window
 */
 void display_server_ip() {
 
@@ -227,11 +229,11 @@ void display_server_ip() {
 }
 
 /*
-* This function update the server_ip variable
+* This function update the server_ip global variable
+* @param ip The new server ip
 */
 void update_server_ip(char *ip) {
     sprintf(server_ip, "%s", ip);
-    //Convert the IP to a strinng
 } 
 
 /*
@@ -335,13 +337,15 @@ void redisplay_everything() {
 
 /*
 * Update the client id global var
+* @param id The new client id
 */
 void update_client_id(int id) {
     client_id = id;
 }
 
 /*
-* Update the socket_fd global var
+* Update the socket fd global var
+* @param fd The new socket fd
 */
 void update_socket_fd(int fd) {
     socket_fd = fd;

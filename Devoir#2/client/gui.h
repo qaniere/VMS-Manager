@@ -1,3 +1,6 @@
+//SIF1015 - Fall 2022
+//Made by Julio Bangadebia and Quentin Anière
+
 #include <string.h>
 #include <ncurses.h>
 #include <inttypes.h>
@@ -29,7 +32,8 @@ void gui_cleanup();
 void display_server_ip();
 
 /*
-* This function update the server_ip variable
+* This function update the server_ip global variable
+* @param ip The new server ip
 */
 void update_server_ip(char *ip);
 
@@ -61,12 +65,14 @@ void redisplay_everything();
 
 /*
 * Update the client id global var
+* @param id The new client id
 */
 void update_client_id(int id);
 
 
 /*
 * Update the socket fd global var
+* @param fd The new socket fd
 */
 void update_socket_fd(int fd);
 
