@@ -18,7 +18,6 @@
 #define MAX_CLIENTS 100
 
 int client_count = 0;
-int client_id_count = 0;
 int clients[MAX_CLIENTS];
 
 typedef struct ThreadArgs {
@@ -48,5 +47,13 @@ void listen_for_clients(int server_socket, int port);
 * @param head the head of the fifo transactions.
 */
 void *watch_transactions(void *args);
+
+/*
+* This function goes through the clients array and return the
+* first available index. An available index is an index that
+* has a value of -1.
+* @return the first available index in the clients array.
+*/
+int assign_client_id();
 
 #endif

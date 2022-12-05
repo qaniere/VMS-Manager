@@ -43,6 +43,7 @@ void *client_handler(void *args) {
     
     
     free(thread_args);
+    clients[client_id] = -1;
     client_count--;
     return 0;
 }
@@ -68,6 +69,10 @@ void listen_for_clients(int server_socket, int port) {
 
     printf("Listening for clients on port %d\n", port);
 
+    for(int i = 0; i < MAX_CLIENTS; i++) {
+        clients[i] = -1;
+    }
+
     while (1) {
         struct sockaddr_in *client_address = malloc(sizeof(struct sockaddr_in));
         socklen_t client_address_size = sizeof(*client_address);
@@ -79,19 +84,24 @@ void listen_for_clients(int server_socket, int port) {
             exit(1);
         }
 
-        clients[client_count] = client_socket;
-        client_count++;
-        client_id_count++;
-        //The count is the capacity of the array, the id is the client id
+        int client_id = assign_client_id();
+        clients[client_id] = client_socket;
 
-        int sendable_client_count = htonl(client_id_count);
+        if(client_id == -1) {
+            printf("Client rejected, server is full\n");
+            write(client_socket, "Server is full", 15);
+            close(client_socket);
+            continue;
+        }
 
-        printf("New client connected. ID = %d\n", client_id_count);
+        int sendable_client_count = htonl(client_id);
+
+        printf("New client connected. ID = %d\n", client_id);
         write(client_socket, &sendable_client_count, sizeof(sendable_client_count)); 
         //Send the client its ID
 
         ThreadArgs *args = malloc(sizeof(struct ThreadArgs));
-        args->client_id = client_count;
+        args->client_id = client_id;
         args->socket_fd = client_socket;
 
         pthread_t client_thread;
@@ -128,5 +138,24 @@ void *watch_transactions(void *args) {
         }
 
         sleep(1);
+    }
+}
+
+/*
+* This function goes through the clients array and return the
+* first available index. An available index is an index that
+* has a value of -1.
+* @return the first available index in the clients array.
+*/
+int assign_client_id() {
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+
+        if (clients[i] == -1) {
+            return i;
+        
+        } else if (i == MAX_CLIENTS - 1) {
+            printf("Max clients reached\n");
+            return -1;
+        }
     }
 }
