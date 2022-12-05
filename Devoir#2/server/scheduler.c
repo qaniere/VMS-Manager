@@ -20,13 +20,19 @@ int is_thread_list_full() {
 /*
 * Process the transaction given in parameter
 * @param transaction The transaction to process
-* @return void
+* @return transaction result
 */
-void read_transaction(Transaction *transaction) {
+Transaction read_transaction(Transaction *transaction) {
+
+    sem_t *client_transaction_semaphore;
+    sem_init(client_transaction_semaphore, 0, 1);
 
     char *operation = strtok(transaction->operations, "/");
     int client = atoi(operation);
     //Get the client ID, its the first operation
+
+    Transaction *client_transaction = malloc(sizeof(Transaction));
+    client_transaction->client_id = client;
 
     operation = strtok(NULL, "/");
     //Get the next operation
@@ -40,7 +46,12 @@ void read_transaction(Transaction *transaction) {
         //Add a VM
 
             if(!is_thread_list_full()) {
-                pthread_create(&threads[thread_count], NULL, add_vm, NULL);
+
+                ThreadArgsScheduler *args = malloc(sizeof(ThreadArgsScheduler));
+                args->client_transaction_semaphore = client_transaction_semaphore;
+                args->client_transaction = client_transaction;
+
+                pthread_create(&threads[thread_count], NULL, (void *) add_vm, (void *) args);
                 thread_count++;
 
                 printf("Client %d: VM added\n", client);
@@ -158,4 +169,6 @@ void read_transaction(Transaction *transaction) {
         pthread_join(threads[i], NULL);
     }
     //Wait for all threads to finish
+
+    printf("%s\n", client_transaction->operations);
 }

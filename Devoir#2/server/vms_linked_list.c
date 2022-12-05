@@ -20,7 +20,11 @@ int was_stdout_semaphores_initialized = 0;
 /*
 * Add a VM to the linked list
 */
-void *add_vm() {
+void *add_vm(void *args) {
+
+    ThreadArgsScheduler *thread_args = (ThreadArgsScheduler *) args;
+    sem_t *client_transaction_semaphore = thread_args->client_transaction_semaphore;
+    Transaction *client_transaction = thread_args->client_transaction;
 
     if(was_list_semaphores_initialized == 0) {
         sem_init(&list_semaphore, 0, 1);
@@ -78,6 +82,18 @@ void *add_vm() {
     }
 
     sem_post(&list_semaphore); //End of the list usage
+
+    sem_wait(client_transaction_semaphore); 
+    //Protect the client transaction
+
+    char *message = malloc(sizeof(char) * 100);
+    sprintf(message, "VM %d added/", new_vm_infos->number);
+
+    strcat(client_transaction->operations, message);
+
+    //Set the result of the transaction
+
+    sem_post(client_transaction_semaphore);
 }
 
 /*

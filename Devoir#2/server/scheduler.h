@@ -25,6 +25,11 @@ typedef struct NUMBER {
 } NUMBER;
 //Use to pass the VM number of a VM to a pthread
 
+typedef struct ThreadArgsScheduler {
+    sem_t *client_transaction_semaphore;
+    Transaction *client_transaction;
+} ThreadArgsScheduler;
+//Used to pass arguments to a pthread
 
 /*
 * Return whether the thread list is full or not
@@ -38,6 +43,6 @@ int is_thread_list_full();
 * @param transaction The transaction to process
 * @return void
 */
-void read_transaction(Transaction *transaction);
+Transaction read_transaction(Transaction *transaction);
 
 #endif
