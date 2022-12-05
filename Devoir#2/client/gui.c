@@ -160,7 +160,7 @@ void gui_loop() {
                 char *operation = malloc(10);
 
                 if(vms_to_delete != 0) {
-                    sprintf(operation, "D %d", vms_to_delete);
+                    sprintf(operation, "E %d", vms_to_delete);
                     addOperationToTransaction(transaction, operation);
                     display_transaction();
                 }

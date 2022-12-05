@@ -146,7 +146,7 @@ char *ask_string(char *title, char *message) {
     //Enable keyboard input
 
     mvwprintw(popup, 2, 2, message);
-    mvwprintw(popup, 3, 2, "String: ");
+    mvwprintw(popup, 3, 2, "> ");
     //Print the instructions
 
     wrefresh(popup);
@@ -155,7 +155,7 @@ char *ask_string(char *title, char *message) {
     char *string = malloc(100 * sizeof(char));
     //Create a string to store the range
 
-    mvwgetstr(popup, 3, 10, string);
+    mvwgetstr(popup, 3, 3, string);
     wrefresh(popup);
     //Get the range from the user
 
