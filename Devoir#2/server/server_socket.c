@@ -1,6 +1,32 @@
 #include "server_socket.h"
 
 /*
+* Listen to client data
+* @param client_socket: client socket
+*/
+void *client_handler(void *args) {
+    ThreadArgs *thread_args = (ThreadArgs *) args;
+    int client_socket = thread_args->socket_fd;
+    int client_id = thread_args->client_id;
+    
+    int bytes;
+    char buffer[1024];
+
+    while ((bytes = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
+        printf("Client %d: %s", client_id, buffer);
+    }
+    
+    if (bytes == 0) {
+        printf("Client %d disconnected\n", client_id);
+
+    } else if (bytes == -1) {
+        perror("recv failed");
+    }
+    
+    return 0;
+}
+
+/*
 * This function is used to listen for new connections.
 * it will add any new clients to the clients array.
 * @param server_socket the socket to listen on.
@@ -34,5 +60,12 @@ void listen_for_clients(int server_socket, int port) {
         printf("New client connected. ID = %d\n", client_count);
         write(client_socket, &sendable_client_count, sizeof(sendable_client_count)); 
         //Send the client its ID
+
+        ThreadArgs *args = malloc(sizeof(struct ThreadArgs));
+        args->client_id = client_count;
+        args->socket_fd = client_socket;
+
+        pthread_t client_thread;
+        pthread_create(&client_thread, NULL, (void *) client_handler, (void *) args);        
     }
 }

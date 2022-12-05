@@ -64,4 +64,11 @@ void redisplay_everything();
 */
 void update_client_id(int id);
 
+
+/*
+* Update the socket fd global var
+*/
+void update_socket_fd(int fd);
+
+
 #endif

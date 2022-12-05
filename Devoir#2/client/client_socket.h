@@ -25,4 +25,6 @@ int connect_to_server(u_int32_t server_ip, int server_port);
 int get_client_id(int socket_fd);
 
 
+void send_transaction(int socket_fd, int client_id, char* operations);
+
 #endif

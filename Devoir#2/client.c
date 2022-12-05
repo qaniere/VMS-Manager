@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
 
     update_client_id(client_id); 
     update_server_ip(server_ip_str);
+    update_socket_fd(socket_fd);
 
     gui_loop(); //Start GUI loop
 

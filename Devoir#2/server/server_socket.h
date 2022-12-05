@@ -15,6 +15,18 @@
 int client_count = 0;
 int clients[MAX_CLIENTS];
 
+typedef struct ThreadArgs {
+    int client_id;
+    int socket_fd;
+} ThreadArgs;
+
+/*
+* Listen to client data
+* Must be called in a thread
+* @param client_socket: the socket of the client
+*/
+void *client_handler(void *client_socket);
+
 
 /*
 * This function is used to listen for new connections.

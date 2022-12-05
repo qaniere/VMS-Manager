@@ -29,6 +29,8 @@ int cursor_y = -1;
 int current_choice = 0;
 //Contains the current choice of the main menu and the cursor position
 
+int socket_fd = -1;
+
 /*
 * This function initializes the ncurses library and creates two windows
 */
@@ -179,7 +181,12 @@ void gui_loop() {
                 redisplay_everything();
 
             } else if(current_choice == 4) {
-                // send_transaction();
+                send_transaction(socket_fd, client_id, transaction->operations);
+                transaction = createTransaction(client_id);
+                redisplay_everything();
+
+            } else if(current_choice == 5) {
+                break;
 
             } else if(current_choice == 5) {
                 break;
@@ -329,4 +336,11 @@ void redisplay_everything() {
 */
 void update_client_id(int id) {
     client_id = id;
+}
+
+/*
+* Update the socket_fd global var
+*/
+void update_socket_fd(int fd) {
+    socket_fd = fd;
 }
