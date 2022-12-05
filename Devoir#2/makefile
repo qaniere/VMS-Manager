@@ -9,12 +9,23 @@ vms-manager-client:
 #Compilation of client sources files and making the file executable (Linux)
 
 launch-server: vms-manager-server
+ifdef port
+	./vms-manager-server $(port)
+else
 	./vms-manager-server
-
+endif
 #Launch the server
 
 launch-client: vms-manager-client
+ifdef port
+ifdef ip
+	./vms-manager-client $(ip) $(port)
+else
+	./vms-manager-client localhost $(port)
+endif
+else
 	./vms-manager-client
+endif
 
 #Launch the client
 
