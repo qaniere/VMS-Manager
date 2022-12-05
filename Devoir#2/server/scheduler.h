@@ -26,8 +26,10 @@ typedef struct NUMBER {
 //Use to pass the VM number of a VM to a pthread
 
 typedef struct ThreadArgsScheduler {
-    sem_t *client_transaction_semaphore;
-    Transaction *client_transaction;
+    sem_t *client_transaction_semaphore; //The semaphore of the client transaction, to avoid collision between threads
+    Transaction *client_transaction; //The transaction of the client, the response
+    RANGE range; //The range of VMs to process (Only used for the "list" operation)
+    NUMBER number; //The VM number to process (Only used for the "delete" and "execute" operations)
 } ThreadArgsScheduler;
 //Used to pass arguments to a pthread
 

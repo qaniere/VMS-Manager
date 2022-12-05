@@ -24,20 +24,28 @@ int is_thread_list_full() {
 */
 Transaction read_transaction(Transaction *transaction) {
 
-    sem_t *client_transaction_semaphore;
+    sem_t *client_transaction_semaphore = malloc(sizeof(sem_t));
     sem_init(client_transaction_semaphore, 0, 1);
 
-    char *operation = strtok(transaction->operations, "/");
-    int client = atoi(operation);
-    //Get the client ID, its the first operation
-
     Transaction *client_transaction = malloc(sizeof(Transaction));
-    client_transaction->client_id = client;
+    client_transaction->client_id = transaction->client_id;
 
-    operation = strtok(NULL, "/");
-    //Get the next operation
+    char *operations[400];
+    int i = 0;
+    int array_size = 0;
 
-    while(operation != NULL) {
+    operations[i] = strtok(transaction->operations, "/");
+
+    while(operations[i] != NULL) {
+        operations[++i] = strtok(NULL, "/");
+        array_size++;
+    }
+    
+    int client = atoi(operations[0]);
+
+    for(int i = 0; i < array_size; i++) {
+
+        char *operation = operations[i];
 
         sleep(1); 
         //Sleep 1 second to avoid collision between threads
@@ -84,8 +92,13 @@ Transaction read_transaction(Transaction *transaction) {
             range->start = atoi(numbers[0]);
             range->end = atoi(numbers[1]);
 
+            ThreadArgsScheduler *args = malloc(sizeof(ThreadArgsScheduler));
+            args->client_transaction_semaphore = client_transaction_semaphore;
+            args->client_transaction = client_transaction;
+            args->range = *range;
+            
             if(!is_thread_list_full()) {
-                pthread_create(&threads[thread_count], NULL, print_vm, (void *) range);
+                pthread_create(&threads[thread_count], NULL, print_vm, (void *) args);
                 thread_count++;
 
                 printf("Client %d: VMs %d-%d printed\n", client, range->start, range->end);
@@ -112,8 +125,13 @@ Transaction read_transaction(Transaction *transaction) {
             struct NUMBER *number = malloc(sizeof(NUMBER));
             number->number = atoi(arguments[1]);
 
+            ThreadArgsScheduler *args = malloc(sizeof(ThreadArgsScheduler));
+            args->client_transaction_semaphore = client_transaction_semaphore;
+            args->client_transaction = client_transaction;
+            args->number = *number;
+
             if(!is_thread_list_full()) {
-                pthread_create(&threads[thread_count], NULL, delete_vm, (void *) number);
+                pthread_create(&threads[thread_count], NULL, delete_vm, (void *) args);
                 thread_count++;
 
                 printf("Client %d: VM %d deleted\n", client, number->number);
@@ -148,8 +166,13 @@ Transaction read_transaction(Transaction *transaction) {
             NUMBER *number = malloc(sizeof(NUMBER));
             number->number = atoi(arguments[1]);
 
+            ThreadArgsScheduler *args = malloc(sizeof(ThreadArgsScheduler));
+            args->client_transaction_semaphore = client_transaction_semaphore;
+            args->client_transaction = client_transaction;
+            args->number = *number;
+
             if(!is_thread_list_full()) {
-                pthread_create(&threads[thread_count], NULL, execute, (void *) number);
+                pthread_create(&threads[thread_count], NULL, execute, (void *) args);
                 thread_count++;
 
                 printf("Client %d: VM %d executed\n", client, number->number);
@@ -162,7 +185,6 @@ Transaction read_transaction(Transaction *transaction) {
             }
         }
 
-        operation = strtok(NULL, "/");
     }
 
     for(int i = 0; i < thread_count; i++) {

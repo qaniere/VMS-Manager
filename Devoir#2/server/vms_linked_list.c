@@ -94,15 +94,22 @@ void *add_vm(void *args) {
     //Set the result of the transaction
 
     sem_post(client_transaction_semaphore);
+
+    free(message);
+    free(thread_args);
 }
 
 /*
 * Print a range of VMs
 * @param *numbers The range of numbers, must be a RANGE struct
 */
-void *print_vm(void *range) {
+void *print_vm(void *args) {
 
-    RANGE numbers = *(RANGE *)range;
+    ThreadArgsScheduler *thread_args = (ThreadArgsScheduler *) args;
+    sem_t *client_transaction_semaphore = thread_args->client_transaction_semaphore;
+    Transaction *client_transaction = thread_args->client_transaction;
+
+    RANGE numbers = thread_args->range;
     int start = numbers.start;
     int end = numbers.end;
 
@@ -120,9 +127,13 @@ void *print_vm(void *range) {
     //Initialize the semaphores if they were not initialized
 
     sem_wait(&list_semaphore); //Starting to use semaphores to protect the linked list
-    sem_wait(&stdout_semaphore); //Starting to use semaphores to protect the stdout
+     //Starting to use semaphores to protect the stdout
 
-    // printf("VMs from %d to %d:\n", start, end);
+    char *message = malloc(sizeof(char) * 100);
+    sprintf(message, "VMs %d-%d: \n", start, end);
+
+    sem_wait(client_transaction_semaphore);
+    strcat(client_transaction->operations, message);
 
     while(list != NULL) {
     //Iterate through the list until the end
@@ -130,22 +141,30 @@ void *print_vm(void *range) {
         //If the VM number is between the range, print it
             // printf(" - VM #%d", list->vm_infos->number);
             // printf(" : Busy = %d\n", list->vm_infos->busy);
+            sprintf(message, " - VM #%d", list->vm_infos->number);
+            strcat(client_transaction->operations, message);
+            sprintf(message, " : Busy = %d\n", list->vm_infos->busy);
+            strcat(client_transaction->operations, message);
         }
 
         list = list->next;
     }
 
-    sem_post(&list_semaphore); //End of the list usage
-    sem_post(&stdout_semaphore); //End of the stdout usage
+    strcat(client_transaction->operations, "/");
 
-    free(range);
+    sem_post(&list_semaphore); //End of the list usage
+     //End of the stdout usage
+    sem_post(client_transaction_semaphore);
+
+    free(args);
 }
 
 /*
 * Delete a VM from the linked list
 * @param number The number of the VM to delete
 */
-void *delete_vm(void *number) {
+void *delete_vm(void *args) {
+
     struct VM_NODE *list = head;
     struct VM_NODE *previous = NULL;
 
@@ -155,7 +174,11 @@ void *delete_vm(void *number) {
     }
     //Initialize the semaphores if they were not initialized
     
-    NUMBER s_number = *(NUMBER *)number;
+    ThreadArgsScheduler *thread_args = (ThreadArgsScheduler *) args;
+    sem_t *client_transaction_semaphore = thread_args->client_transaction_semaphore;
+    Transaction *client_transaction = thread_args->client_transaction;
+
+    NUMBER s_number = thread_args->number;
     int vm_number = s_number.number;
 
     sem_wait(&list_semaphore); //Starting to use semaphores to protect the linked list
@@ -179,8 +202,17 @@ void *delete_vm(void *number) {
         list = list->next;
     }
 
+    sem_wait(client_transaction_semaphore);
+    //Protect the client transaction
+
+    char *message = malloc(sizeof(char) * 100);
+    sprintf(message, "VM %d deleted/", vm_number);
+    strcat(client_transaction->operations, message);
+
+    sem_post(client_transaction_semaphore);
+
     sem_post(&list_semaphore); //End of the list usage
-    free(number);
+    free(args);
 }
 
 /*Return whether a VM exists or not
@@ -212,12 +244,23 @@ void *execute(void *args) {
         was_stdout_semaphores_initialized = 1;
     }
 
-    NUMBER number = *(NUMBER *)args;
+    ThreadArgsScheduler *thread_args = (ThreadArgsScheduler *) args;
+    sem_t *client_transaction_semaphore = thread_args->client_transaction_semaphore;
+    Transaction *client_transaction = thread_args->client_transaction;
+
+    NUMBER number = thread_args->number;
     int vm_number = number.number;
 
-    sem_wait(&stdout_semaphore); //Starting to use semaphores to protect the stdout
-    printf("Executing code into VM #%d...\n", vm_number);
-    sem_post(&stdout_semaphore); //End of the stdout usage
+    sleep(2);
+
+    sem_wait(client_transaction_semaphore);
+    //Protect the client transaction
+
+    char *message = malloc(sizeof(char) * 100);
+    sprintf(message, "VM %d executed/", vm_number);
+    strcat(client_transaction->operations, message);
+
+    sem_post(client_transaction_semaphore);
 
     free(args);
 }

@@ -175,7 +175,7 @@ void gui_loop() {
                 char *operation = malloc(sizeof(char) * (strlen(filename) + 20));
 
                 if(vms_to_execute != 0) {
-                    sprintf(operation, "E %d %s", vms_to_execute, filename);
+                    sprintf(operation, "X %d %s", vms_to_execute, filename);
                     addOperationToTransaction(transaction, operation);
                     display_transaction();
                 }
