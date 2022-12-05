@@ -50,7 +50,7 @@ int get_client_id(int socket_fd) {
 void send_transaction(int socket_fd, int client_id, char *operations) {
 
     char *transaction_string = malloc((TRANSACTION_MAX_SIZE * sizeof(char)) + sizeof(client_id));
-    sprintf(transaction_string, "%d\n%s", client_id, operations);
+    sprintf(transaction_string, "%d/%s", client_id, operations);
 
     int write_result = write(socket_fd, transaction_string, strlen(transaction_string) * sizeof(char));
     if (write_result == -1) {

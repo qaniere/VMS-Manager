@@ -13,7 +13,7 @@ void *client_handler(void *args) {
     char buffer[1024];
 
     while ((bytes = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
-        printf("Client %d: %s", client_id, buffer);
+        printf("Client %d: %s\n", client_id, buffer);
     }
     
     if (bytes == 0) {

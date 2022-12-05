@@ -183,6 +183,8 @@ void gui_loop() {
             } else if(current_choice == 4) {
                 send_transaction(socket_fd, client_id, transaction->operations);
                 transaction = createTransaction(client_id);
+
+                wclear(windows[1]);
                 redisplay_everything();
 
             } else if(current_choice == 5) {

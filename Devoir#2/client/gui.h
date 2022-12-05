@@ -70,5 +70,9 @@ void update_client_id(int id);
 */
 void update_socket_fd(int fd);
 
+/*
+* This function is actually defined in the client_socket.c file
+*/
+void send_transaction(int socket_fd, int client_id, char *operations);
 
 #endif
