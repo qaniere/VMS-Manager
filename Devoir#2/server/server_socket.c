@@ -25,6 +25,8 @@ void *client_handler(void *args) {
         Transaction *transaction = malloc(sizeof(Transaction));
         transaction->client_id = client_id;
         strcpy(transaction->operations, buffer);
+        //Recreate the transaction sendend by the client because the transaction is not sent as a struct
+        //but as a string of characters
 
         add_transaction(head, *transaction);
     }
@@ -59,9 +61,10 @@ void listen_for_clients(int server_socket, int port) {
         exit(1);
     }
 
-    head = malloc(sizeof(FifoTransactions));
-    head->next = NULL;
-    head->transaction = NULL;
+    head = create_fifo_transaction_list();
+
+    pthread_t watch_transactions_thread;
+    pthread_create(&watch_transactions_thread, NULL, (void *) watch_transactions, (void *) head);
 
     printf("Listening for clients on port %d\n", port);
 
@@ -100,4 +103,30 @@ void listen_for_clients(int server_socket, int port) {
     }
 
     close(server_socket);
+}
+
+/*
+* Check the fifo transactions for any transactions that are ready to be processed and process them.
+* @param head the head of the fifo transactions.
+*/
+void *watch_transactions(void *args) {
+
+    FifoTransactions *head = (FifoTransactions *) args;
+    //Cast the args to their correct type
+
+    while (1) {
+
+        if(get_first_transaction(head) != NULL) {
+            Transaction *transaction = get_first_transaction(head);
+
+            int client_id = transaction->client_id;
+            char *operations = transaction->operations;
+        
+            printf("Processing transaction for client %d: %s\n", client_id, operations);
+
+            remove_first_transaction(head);
+        }
+
+        sleep(1);
+    }
 }

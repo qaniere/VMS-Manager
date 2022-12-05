@@ -43,4 +43,10 @@ void *client_handler(void *client_socket);
 */
 void listen_for_clients(int server_socket, int port);
 
+/*
+* Check the fifo transactions for any transactions that are ready to be processed and process them.
+* @param head the head of the fifo transactions.
+*/
+void *watch_transactions(void *args);
+
 #endif

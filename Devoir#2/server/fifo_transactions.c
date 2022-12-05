@@ -8,7 +8,7 @@ sem_t list_semaphore;
 */
 FifoTransactions *create_fifo_transaction_list() {
     FifoTransactions *list = malloc(sizeof(FifoTransactions));
-    list->transaction = malloc(sizeof(Transaction));
+    list->transaction = NULL;
     list->next = NULL;
 
     sem_init(&list_semaphore, 0, 1);
@@ -27,11 +27,9 @@ void add_transaction(FifoTransactions *list, Transaction transaction) {
     new->next = NULL;
     //Allocate memory for the new transaction node
 
+    sem_wait(&list_semaphore);
     if (list->transaction == NULL) {
-        sem_wait(&list_semaphore);
         list->transaction = &transaction;
-        sem_post(&list_semaphore);
-        //Protect the list from concurrent access
 
     } else {
 
@@ -40,11 +38,10 @@ void add_transaction(FifoTransactions *list, Transaction transaction) {
             current = current->next;
         }
 
-        sem_wait(&list_semaphore);
         current->next = new;
-        sem_post(&list_semaphore);
-        //Protect the list from concurrent access
     }
+
+    sem_post(&list_semaphore);
 }
 
 /*
@@ -63,10 +60,17 @@ Transaction *get_first_transaction(FifoTransactions *list) {
 */
 void remove_first_transaction(FifoTransactions *list) {
     sem_wait(&list_semaphore);
-    FifoTransactions *next = list->next;
-    list->transaction = next->transaction;
-    list->next = next->next;
-    free(next);
+
+    if(list->next == NULL) {
+        list->transaction = NULL;
+        
+    } else {
+        FifoTransactions *next = list->next;
+        list->transaction = next->transaction;
+        list->next = next->next;
+        free(next);
+    }
+
     sem_post(&list_semaphore);
     //Protect the list from concurrent access
 }
