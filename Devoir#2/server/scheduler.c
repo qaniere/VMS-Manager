@@ -18,35 +18,32 @@ int is_thread_list_full() {
 }
 
 /*
-* Read the transaction file and call the function in threads to process the transactions
-* @param path The path of the transaction file
+* Process the transaction given in parameter
+* @param transaction The transaction to process
 * @return void
 */
-void read_transaction_file(char * path) {
-    FILE *fd = fopen(path, "r");
+void read_transaction(Transaction *transaction) {
 
-    if(fd == NULL) {
-        perror("Error - unable to open file");
-        exit(1);
-    }
+    char *operation = strtok(transaction->operations, "/");
+    int client = atoi(operation);
+    //Get the client ID, its the first operation
 
-    size_t len = 0;
-    char *line = NULL;
-    int line_count = 0;
-    
-    while(getline(&line, &len, fd) != -1) {
+    operation = strtok(NULL, "/");
+    //Get the next operation
+
+    while(operation != NULL) {
 
         sleep(1); 
         //Sleep 1 second to avoid collision between threads
 
-        line_count++;
-
-        if(line[0] == 'A') {
+        if(operation[0] == 'A') {
         //Add a VM
 
             if(!is_thread_list_full()) {
                 pthread_create(&threads[thread_count], NULL, add_vm, NULL);
                 thread_count++;
+
+                printf("Client %d: VM added\n", client);
 
             } else {
             //The transaction file required to create more threads than the maximum number of threads
@@ -54,20 +51,20 @@ void read_transaction_file(char * path) {
                 exit(1);
             }
 
-        } else if(line[0] == 'L') {
+        } else if(operation[0] == 'L') {
         //Print a range of VMs
 
             char *arguments[2];
             char *numbers[2];
 
-            arguments[0] = strtok(line, " ");
+            arguments[0] = strtok(operation, " ");
             arguments[1] = strtok(NULL, " ");
 
             numbers[0] = strtok(arguments[1], "-");
             numbers[1] = strtok(NULL, "-");
 
             if(numbers[0] == NULL || numbers[1] == NULL) {
-                printf("Warning : Invalid range on line %d\n", line_count);
+                printf("Client %d: Invalid range of VMs. The program will ignore this operation.\n", client);
                 continue;
             }
 
@@ -80,22 +77,24 @@ void read_transaction_file(char * path) {
                 pthread_create(&threads[thread_count], NULL, print_vm, (void *) range);
                 thread_count++;
 
+                printf("Client %d: VMs %d-%d printed\n", client, range->start, range->end);
+
             } else {
             //The transaction file required to create more threads than the maximum number of threads
                 printf("Error - the thread list is full. The program will exit.");
                 exit(1);
             }
 
-        } else if(line[0] == 'E') {
+        } else if(operation[0] == 'E') {
         //Delete a VM
 
             char *arguments[2];
 
-            arguments[0] = strtok(line, " ");
+            arguments[0] = strtok(operation, " ");
             arguments[1] = strtok(NULL, " ");
 
             if(arguments[1] == NULL) {
-                printf("Warning : Invalid VM number on line %d\n", line_count);
+                printf("Client %d: Invalid VM number. The program will ignore this operation.\n", client);
                 continue;
             }
 
@@ -106,29 +105,31 @@ void read_transaction_file(char * path) {
                 pthread_create(&threads[thread_count], NULL, delete_vm, (void *) number);
                 thread_count++;
 
+                printf("Client %d: VM %d deleted\n", client, number->number);
+
             } else {
             //The transaction file required to create more threads than the maximum number of threads
                 printf("Error - the thread list is full. The program will exit.");
                 exit(1);
             }
 
-        } else if(line[0] == 'X') {
+        } else if(operation[0] == 'X') {
         //Execute binary code on the VM
         //(This function is more a proof of concept than a real function)
 
             char *arguments[3];
 
-            arguments[0] = strtok(line, " ");
+            arguments[0] = strtok(operation, " ");
             arguments[1] = strtok(NULL, " ");
             arguments[2] = strtok(NULL, " ");
 
             if(arguments[1] == NULL || arguments[2] == NULL) {
-                printf("Warning : Invalid VM number or binary code on line %d\n", line_count);
+                printf("Client %d: Invalid VM number or binary code. The program will ignore this operation.\n", client);
                 continue;
             }
 
             if(!is_vm_exists(atoi(arguments[1]))) {
-                printf("Warning : VM %d does not exist", atoi(arguments[1]));
+                printf("Client %d: VM %d does not exist", atoi(arguments[1]), client);
                 continue;
             }
 
@@ -140,6 +141,8 @@ void read_transaction_file(char * path) {
                 pthread_create(&threads[thread_count], NULL, execute, (void *) number);
                 thread_count++;
 
+                printf("Client %d: VM %d executed\n", client, number->number);
+
             } else {
             //The transaction file required to create more threads than the maximum number of threads
 
@@ -147,11 +150,9 @@ void read_transaction_file(char * path) {
                 exit(1);
             }
         }
-    }
 
-    free(line);
-    fclose(fd);
-    //Close file descriptor
+        operation = strtok(NULL, "/");
+    }
 
     for(int i = 0; i < thread_count; i++) {
         pthread_join(threads[i], NULL);

@@ -106,15 +106,14 @@ void *print_vm(void *range) {
     sem_wait(&list_semaphore); //Starting to use semaphores to protect the linked list
     sem_wait(&stdout_semaphore); //Starting to use semaphores to protect the stdout
 
-    printf("\e[1;1H\e[2J"); //Clear the screen
-    printf("VMs from %d to %d:\n", start, end);
+    // printf("VMs from %d to %d:\n", start, end);
 
     while(list != NULL) {
     //Iterate through the list until the end
         if(list->vm_infos->number >= start && list->vm_infos->number <= end) {
         //If the VM number is between the range, print it
-            printf(" - VM #%d", list->vm_infos->number);
-            printf(" : Busy = %d\n", list->vm_infos->busy);
+            // printf(" - VM #%d", list->vm_infos->number);
+            // printf(" : Busy = %d\n", list->vm_infos->busy);
         }
 
         list = list->next;

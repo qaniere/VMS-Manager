@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 
 #include "fifo_transactions.c"
+#include "scheduler.c"
 
 #ifndef SERVER_SERVER_SOCKET_H_
 #define SERVER_SERVER_SOCKET_H_
@@ -44,7 +45,7 @@ void listen_for_clients(int server_socket, int port);
 
 /*
 * Check the fifo transactions for any transactions that are ready to be processed and process them.
-* @param head the head of the fifo transactions.
+* @param fifo_head the fifo_head of the fifo transactions.
 */
 void *watch_transactions(void *args);
 

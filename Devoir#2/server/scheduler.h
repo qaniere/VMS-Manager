@@ -34,10 +34,10 @@ typedef struct NUMBER {
 int is_thread_list_full();
 
 /*
-* Read the transaction file and call the function in threads to process the transactions
-* @param path The path of the transaction file
+* Process the transaction given in parameter
+* @param transaction The transaction to process
 * @return void
 */
-void read_transaction_file(char * path);
+void read_transaction(Transaction *transaction);
 
 #endif
