@@ -3,6 +3,8 @@
 
 #include "server_socket.h"
 
+FifoTransactions *head;
+
 /*
 * Listen to client data
 * Must be called in a thread
@@ -19,6 +21,12 @@ void *client_handler(void *args) {
 
     while ((bytes = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
         printf("Client %d: %s\n", client_id, buffer);
+
+        Transaction *transaction = malloc(sizeof(Transaction));
+        transaction->client_id = client_id;
+        strcpy(transaction->operations, buffer);
+
+        add_transaction(head, *transaction);
     }
     
     if (bytes == 0) {
@@ -29,6 +37,8 @@ void *client_handler(void *args) {
         perror("recv failed");
         close(client_socket);
     }
+
+    
     
     free(thread_args);
     client_count--;
@@ -48,6 +58,10 @@ void listen_for_clients(int server_socket, int port) {
         perror("listen errror");
         exit(1);
     }
+
+    head = malloc(sizeof(FifoTransactions));
+    head->next = NULL;
+    head->transaction = NULL;
 
     printf("Listening for clients on port %d\n", port);
 
@@ -80,4 +94,10 @@ void listen_for_clients(int server_socket, int port) {
         pthread_t client_thread;
         pthread_create(&client_thread, NULL, (void *) client_handler, (void *) args);        
     }
+
+    for(int i = 0; i < client_count; i++) {
+        close(clients[i]);
+    }
+
+    close(server_socket);
 }
