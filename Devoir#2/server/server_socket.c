@@ -132,7 +132,15 @@ void *watch_transactions(void *args) {
             int client_id = transaction->client_id;
             char *operations = transaction->operations;
         
-            read_transaction(transaction);
+            Transaction *t = read_transaction(transaction);
+
+            char *message = malloc(sizeof(char) * 1024);
+            sprintf(message, "%s", t->operations);
+            //Recreate the transaction sendend by the client because the transaction is not sent as a struct
+
+            int client_socket = clients[client_id];
+            write(client_socket, message, strlen(message));
+            //Send the transaction to the client
 
             remove_first_transaction(fifo_head);
 

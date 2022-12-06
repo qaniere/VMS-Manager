@@ -130,7 +130,7 @@ void *print_vm(void *args) {
      //Starting to use semaphores to protect the stdout
 
     char *message = malloc(sizeof(char) * 100);
-    sprintf(message, "VMs %d-%d: \n", start, end);
+    sprintf(message, "VMs %d-%d:/", start, end);
 
     sem_wait(client_transaction_semaphore);
     strcat(client_transaction->operations, message);
@@ -139,11 +139,7 @@ void *print_vm(void *args) {
     //Iterate through the list until the end
         if(list->vm_infos->number >= start && list->vm_infos->number <= end) {
         //If the VM number is between the range, print it
-            // printf(" - VM #%d", list->vm_infos->number);
-            // printf(" : Busy = %d\n", list->vm_infos->busy);
-            sprintf(message, " - VM #%d", list->vm_infos->number);
-            strcat(client_transaction->operations, message);
-            sprintf(message, " : Busy = %d\n", list->vm_infos->busy);
+            sprintf(message, "  - VM #%d: Busy = %d/", list->vm_infos->number,  list->vm_infos->busy);
             strcat(client_transaction->operations, message);
         }
 

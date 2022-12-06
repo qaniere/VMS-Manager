@@ -30,6 +30,9 @@ int main(int argc, char *argv[]) {
     update_server_ip(server_ip_str);
     update_socket_fd(socket_fd);
 
+    pthread_t server_listenner_thread;
+    pthread_create(&server_listenner_thread, NULL, (void *) server_listenner, (void *) &socket_fd);
+
     gui_loop(); //Start GUI loop
 
     gui_cleanup();

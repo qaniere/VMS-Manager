@@ -22,7 +22,7 @@ int is_thread_list_full() {
 * @param transaction The transaction to process
 * @return transaction result
 */
-Transaction read_transaction(Transaction *transaction) {
+Transaction *read_transaction(Transaction *transaction) {
 
     sem_t *client_transaction_semaphore = malloc(sizeof(sem_t));
     sem_init(client_transaction_semaphore, 0, 1);
@@ -192,5 +192,5 @@ Transaction read_transaction(Transaction *transaction) {
     }
     //Wait for all threads to finish
 
-    printf("%s\n", client_transaction->operations);
+    return client_transaction;
 }

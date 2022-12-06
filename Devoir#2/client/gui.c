@@ -350,3 +350,39 @@ void update_client_id(int id) {
 void update_socket_fd(int fd) {
     socket_fd = fd;
 }
+
+void *server_listenner(void *socket) {
+
+    int client_socket = *(int *)socket;
+
+    int bytes;
+    char buffer[1024];
+    while(bytes = recv(client_socket, buffer, 1024, 0)) {
+        
+        //Split the message into an array of string (each string is delimited by a slash)
+        //Each string of the array must be displayed in the right window
+
+        char *token = strtok(buffer, "/");
+        char *messages[100];
+        int i = 0;
+
+        while(token != NULL) {
+            messages[i] = token;
+            token = strtok(NULL, "/");
+            i++;
+        }
+
+        //Display the title
+        mvwprintw(windows[1], 1, 1, "Server response :");
+
+        for(int j = 0; j < i; j++) {
+            mvwprintw(windows[1], j + 2, 2, "                        ");
+            mvwprintw(windows[1], j + 2, 2, "%s", messages[j]);
+            wrefresh(windows[1]);
+        }
+        
+        box(windows[1], 0, 0);
+
+        memset(buffer, 0, 1024);
+    }
+}

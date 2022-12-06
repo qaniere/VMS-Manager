@@ -45,6 +45,6 @@ int is_thread_list_full();
 * @param transaction The transaction to process
 * @return void
 */
-Transaction read_transaction(Transaction *transaction);
+Transaction *read_transaction(Transaction *transaction);
 
 #endif
