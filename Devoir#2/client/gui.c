@@ -186,14 +186,15 @@ void gui_loop() {
 
             } else if(current_choice == 4) {
                 send_transaction(socket_fd, client_id, transaction->operations);
+                transaction->operations[0] = '\0'; //Reset the string, so it can be reused
                 transaction = createTransaction(client_id);
 
                 wclear(windows[1]); //Clear the previous transaction
                 redisplay_everything();
 
             } else if(current_choice == 5) {
+            //Quit the program
                 break;
-
             }
         }
 
@@ -283,6 +284,10 @@ void display_client_id() {
 */
 void display_transaction() {
 
+    wclear(windows[1]);
+    redisplay_everything();
+    //Clear the previous transaction
+
     int line_cursor = 2;
     int column_cursor = 2;
     //Set the cursor position, where the text will be printed
@@ -351,16 +356,18 @@ void update_socket_fd(int fd) {
     socket_fd = fd;
 }
 
+/*
+* This function listen for the server and display any received message in the right window
+* @param socket The socket to listen on
+*/
 void *server_listenner(void *socket) {
 
     int client_socket = *(int *)socket;
+    //Cast the arg to their correct type
 
     int bytes;
     char buffer[1024];
     while(bytes = recv(client_socket, buffer, 1024, 0)) {
-        
-        //Split the message into an array of string (each string is delimited by a slash)
-        //Each string of the array must be displayed in the right window
 
         char *token = strtok(buffer, "/");
         char *messages[100];
@@ -371,18 +378,18 @@ void *server_listenner(void *socket) {
             token = strtok(NULL, "/");
             i++;
         }
+        //Split the received string into a array
 
-        //Display the title
         mvwprintw(windows[1], 1, 1, "Server response :");
+        //Display the title
 
         for(int j = 0; j < i; j++) {
             mvwprintw(windows[1], j + 2, 2, "                        ");
             mvwprintw(windows[1], j + 2, 2, "%s", messages[j]);
             wrefresh(windows[1]);
         }
+        //Display each messages into the right window
         
-        box(windows[1], 0, 0);
-
-        memset(buffer, 0, 1024);
+        memset(buffer, 0, 1024); //Clear the buffer
     }
 }

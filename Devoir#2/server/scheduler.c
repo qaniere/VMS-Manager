@@ -26,6 +26,8 @@ Transaction *read_transaction(Transaction *transaction) {
 
     sem_t *client_transaction_semaphore = malloc(sizeof(sem_t));
     sem_init(client_transaction_semaphore, 0, 1);
+    //Get the semaphore of the client transaction reponse
+    //to avoid threads conflicts
 
     Transaction *client_transaction = malloc(sizeof(Transaction));
     client_transaction->client_id = transaction->client_id;
@@ -35,6 +37,7 @@ Transaction *read_transaction(Transaction *transaction) {
     int array_size = 0;
 
     operations[i] = strtok(transaction->operations, "/");
+    //Split the operation string into an array of string
 
     while(operations[i] != NULL) {
         operations[++i] = strtok(NULL, "/");
@@ -42,13 +45,14 @@ Transaction *read_transaction(Transaction *transaction) {
     }
     
     int client = atoi(operations[0]);
+    //The first operation is the client id
 
-    for(int i = 0; i < array_size; i++) {
+    for(int i = 1; i < array_size; i++) {
 
         char *operation = operations[i];
 
-        sleep(1); 
-        //Sleep 1 second to avoid collision between threads
+        sleep(0.5); 
+        //Sleep half second to avoid collision between threads
 
         if(operation[0] == 'A') {
         //Add a VM
@@ -83,6 +87,7 @@ Transaction *read_transaction(Transaction *transaction) {
             numbers[1] = strtok(NULL, "-");
 
             if(numbers[0] == NULL || numbers[1] == NULL) {
+
                 printf("Client %d: Invalid range of VMs. The program will ignore this operation.\n", client);
                 continue;
             }
@@ -158,7 +163,11 @@ Transaction *read_transaction(Transaction *transaction) {
             }
 
             if(!is_vm_exists(atoi(arguments[1]))) {
-                printf("Client %d: VM %d does not exist", atoi(arguments[1]), client);
+                
+                char *message = malloc(sizeof(char) * 100);
+                sprintf(message, "VM %s does not exist/", arguments[1]);
+                strcat(client_transaction->operations, message); 
+
                 continue;
             }
 
@@ -175,7 +184,7 @@ Transaction *read_transaction(Transaction *transaction) {
                 pthread_create(&threads[thread_count], NULL, execute, (void *) args);
                 thread_count++;
 
-                printf("Client %d: VM %d executed\n", client, number->number);
+                printf("Client %d: VM %d code executed\n", client, number->number);
 
             } else {
             //The transaction file required to create more threads than the maximum number of threads

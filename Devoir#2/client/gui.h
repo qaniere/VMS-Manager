@@ -81,4 +81,10 @@ void update_socket_fd(int fd);
 */
 void send_transaction(int socket_fd, int client_id, char *operations);
 
+/*
+* This function listen for the server and display any received message in the right window
+* @param socket The socket to listen on
+*/
+void *server_listenner(void *socket);
+
 #endif

@@ -247,16 +247,48 @@ void *execute(void *args) {
     NUMBER number = thread_args->number;
     int vm_number = number.number;
 
+    sem_wait(&list_semaphore);
+    if(is_vm_exists(vm_number)) {
+
+        VM_NODE *current = head;
+        while(current != NULL) {
+        //Iterate through the list until the good number
+            if(current->vm_infos->number == vm_number) {
+                current->vm_infos->busy = 1;
+                break;
+            }
+
+            current = current->next;
+        }
+    }
+    sem_post(&list_semaphore);
+
     sleep(2);
 
     sem_wait(client_transaction_semaphore);
     //Protect the client transaction
 
     char *message = malloc(sizeof(char) * 100);
-    sprintf(message, "VM %d executed/", vm_number);
+    sprintf(message, "VM %d code executed/", vm_number);
     strcat(client_transaction->operations, message);
 
     sem_post(client_transaction_semaphore);
+
+    sem_wait(&list_semaphore);
+    if(is_vm_exists(vm_number)) {
+
+        VM_NODE *current = head;
+        while(current != NULL) {
+        //Iterate through the list until the good number
+            if(current->vm_infos->number == vm_number) {
+                current->vm_infos->busy = 0;
+                break;
+            }
+
+            current = current->next;
+        }
+    }
+    sem_post(&list_semaphore);
 
     free(args);
 }

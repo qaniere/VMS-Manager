@@ -20,7 +20,8 @@ void *client_handler(void *args) {
     char buffer[1024];
 
     while ((bytes = recv(client_socket, buffer, sizeof(buffer), 0)) > 0) {
-        printf("Client %d: %s\n", client_id, buffer);
+
+        printf("Client %d: Request %s (%d bytes)\n", client_id, buffer, bytes);
 
         Transaction *transaction = malloc(sizeof(Transaction));
         transaction->client_id = client_id;
@@ -143,6 +144,7 @@ void *watch_transactions(void *args) {
             //Send the transaction to the client
 
             remove_first_transaction(fifo_head);
+            // free(t);
 
         } else {
             sleep(1); //Sleep for 1 second if there are no transactions to process
