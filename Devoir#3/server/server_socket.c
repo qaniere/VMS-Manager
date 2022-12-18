@@ -30,6 +30,10 @@ void *client_handler(void *args) {
         //but as a string of characters
 
         add_transaction(fifo_head, *transaction);
+
+        for(int i =0; i < 1024; i++) {
+            buffer[i] = '\0';
+        }
     }
     
     if (bytes == 0) {

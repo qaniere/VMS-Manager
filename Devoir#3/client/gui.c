@@ -185,7 +185,6 @@ void gui_loop() {
                     addOperationToTransaction(transaction, operation);
                     send_transaction(socket_fd, client_id, transaction->operations);
                     transaction->operations[0] = '\0'; //Reset the string, so it can be reused
-                    free(transaction);
                     transaction = createTransaction(client_id);
                 }
 

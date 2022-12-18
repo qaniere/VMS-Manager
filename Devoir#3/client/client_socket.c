@@ -67,5 +67,9 @@ void send_transaction(int socket_fd, int client_id, char *operations) {
         exit(1);
     }
 
+    for(int i = 0; i < TRANSACTION_MAX_SIZE; i++) {
+        operations[i] = '\0';
+    }
+
     free(transaction_string);
 }
