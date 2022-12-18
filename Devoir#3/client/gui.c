@@ -23,8 +23,7 @@ char *menus_choices[] = {
     "2 - List VMS",
     "3 - Delete a VMS",
     "4 - Execute binary code on VMS",
-    "5 - Send the transaction",
-    "6 - Quit the program"
+    "5 - Quit the program"
 };
 //Contains the choices of the main menu
 
@@ -135,7 +134,10 @@ void gui_loop() {
             if(current_choice == 0) {
             //Add a VMS
                 addOperationToTransaction(transaction, "A");
-                display_transaction();
+                send_transaction(socket_fd, client_id, transaction->operations);
+                transaction->operations[0] = '\0'; //Reset the string, so it can be reused
+                transaction = createTransaction(client_id);
+
 
             } else if(current_choice == 1) {
             //List VMS
@@ -146,8 +148,10 @@ void gui_loop() {
                 if(range[0] != 0 && range[1] != 0) {
                     sprintf(operation, "L %d-%d", range[0], range[1]);
                     addOperationToTransaction(transaction, operation);
-                    display_transaction();
-                    //Add the operation to the transaction and display it
+                    //Add the operation to the transaction 
+                    send_transaction(socket_fd, client_id, transaction->operations);
+                    transaction->operations[0] = '\0'; //Reset the string, so it can be reused
+                    transaction = createTransaction(client_id);
                 }
 
                 free(operation);
@@ -162,7 +166,9 @@ void gui_loop() {
                 if(vms_to_delete != 0) {
                     sprintf(operation, "E %d", vms_to_delete);
                     addOperationToTransaction(transaction, operation);
-                    display_transaction();
+                    send_transaction(socket_fd, client_id, transaction->operations);
+                    transaction->operations[0] = '\0'; //Reset the string, so it can be reused
+                    transaction = createTransaction(client_id);
                 }
 
                 free(operation);
@@ -177,7 +183,10 @@ void gui_loop() {
                 if(vms_to_execute != 0) {
                     sprintf(operation, "X %d %s", vms_to_execute, filename);
                     addOperationToTransaction(transaction, operation);
-                    display_transaction();
+                    send_transaction(socket_fd, client_id, transaction->operations);
+                    transaction->operations[0] = '\0'; //Reset the string, so it can be reused
+                    free(transaction);
+                    transaction = createTransaction(client_id);
                 }
 
                 free(operation);
@@ -185,14 +194,6 @@ void gui_loop() {
                 redisplay_everything();
 
             } else if(current_choice == 4) {
-                send_transaction(socket_fd, client_id, transaction->operations);
-                transaction->operations[0] = '\0'; //Reset the string, so it can be reused
-                transaction = createTransaction(client_id);
-
-                wclear(windows[1]); //Clear the previous transaction
-                redisplay_everything();
-
-            } else if(current_choice == 5) {
             //Quit the program
                 break;
             }
@@ -241,7 +242,7 @@ void update_server_ip(char *ip) {
 * This function display the menu in the left window
 */
 void display_menu() {
-    for(int i = 0; i < 6; i++) {
+    for(int i = 0; i < 5; i++) {
         mvwprintw(windows[0], i + 3, 10, "                        ");
         //Clear the previous text
 
@@ -279,45 +280,6 @@ void display_client_id() {
     }
 }
 
-/*
-* Display the transaction in the right window
-*/
-void display_transaction() {
-
-    wclear(windows[1]);
-    redisplay_everything();
-    //Clear the previous transaction
-
-    int line_cursor = 2;
-    int column_cursor = 2;
-    //Set the cursor position, where the text will be printed
-
-    mvwprintw(windows[1], 1, 1, "                        ");
-    mvwprintw(windows[1], 1, 1, "New transaction :");
-    //Clear the previous text and display the title
-
-    for(int i = 0; i < strlen(transaction->operations); i++) {
-        if(transaction->operations[i] == '/') {
-        //If the character is a slash, it means that the operation is finished
-
-            line_cursor++;
-            column_cursor = 2;
-            //Go to the next line and reset the column cursor
-
-            mvwprintw(windows[1], line_cursor, 2, "                        ");
-            wrefresh(windows[1]);
-            //Clear the previous text
-
-            continue;
-
-        } else {
-            mvwprintw(windows[1], line_cursor, column_cursor, "%c", transaction->operations[i]);
-            wrefresh(windows[1]);
-
-            column_cursor++;
-        }
-    }
-}
 
 /*
 * This function redisplay everything, the menu, the cursor the client id, the server ip and
@@ -379,6 +341,10 @@ void *server_listenner(void *socket) {
             i++;
         }
         //Split the received string into a array
+
+        //Clear the previous text
+        wclear(windows[1]);
+        redisplay_everything();        
 
         mvwprintw(windows[1], 1, 1, "Server response :");
         //Display the title

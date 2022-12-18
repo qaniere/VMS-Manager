@@ -52,10 +52,6 @@ void update_cursor();
 */
 void display_client_id();
 
-/*
-* Display current transaction in the right window
-*/
-void display_transaction();
 
 /*
 * This function redisplay everything, the menu, the cursor the client id, the server ip and

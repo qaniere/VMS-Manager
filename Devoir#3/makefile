@@ -30,7 +30,7 @@ endif
 #Launch the client
 
 pdf:
-	pandoc -o manuel.pdf README.MD
+	pandoc -o manuel.pdf -f markdown-implicit_figures README.MD
 
 #Generate the pdf file from the README.MD file
 
@@ -38,6 +38,11 @@ clean:
 	rm -f vms-manager-server vms-manager-client
 
 #Removing the server and client executables
+
+count-lines:
+	wc -l *.c *.h */**.c */**.h
+
+## Counting the number of lines of the project
 
 .PHONY: vms-manager-server vms-manager-client laucnh-client launch-server run clean
 #Making the targets phony to avoid conflicts with files with the same name
