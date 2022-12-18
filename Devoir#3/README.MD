@@ -5,6 +5,11 @@ Projet réalisé par Julio Bangadebia et Quentin Anière
 
 ## Description
 
+Ce TP est la suite logique du TP2. 
+
+Le changement majeur est qu'au lieu d'envoyer une série de commandes au serveur, on envoie opération par opération.D'autres optimisations ont été faites pour améliorer la performance du serveur.
+
+Le principe reste le même : Le serveur gère de façon concurrente une liste de VMS, sur laquelle les clients peuvent effectuer des opérations. Les opérations sont induites par des sockets. Les opérations sont traitées par une FIFO concurrente, First In, First Out, la première opération reçue sera la première opération traitée.
 
 ## Compilation
 
@@ -87,7 +92,7 @@ make launch-< server | client > port=< port >
  * A - Ajouter une VMS
  * L x - y - Lister les VMS avec un identifiant compris entre x et y
  * E x - Éliminer une VMS avec un identifiant x
- * X x y - Exécuter le code binare compris dans le fichier y sur la VMS x
+ * X x y - Exécuter le code binaire compris dans le fichier y sur la VMS x
 
 ## Fonctionnement
 
