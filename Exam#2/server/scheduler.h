@@ -7,6 +7,8 @@
 #include <string.h> //For string manipulation
 #include <pthread.h> //For thread management
 
+#include "stat.c" //Stat functions
+
 #ifndef SCHDULER_H
 #define SCHDULER_H
 

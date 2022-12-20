@@ -134,19 +134,32 @@ void *watch_transactions(void *args) {
 
             int client_id = transaction->client_id;
             char *operations = transaction->operations;
+
+            printf("Processing transaction: %s\n", operations);
         
-            Transaction *t = read_transaction(transaction);
+            Transaction *client_transaction = malloc(sizeof(Transaction));
+            client_transaction->client_id = transaction->client_id;
+
+            char *filepath = malloc(sizeof(char) * 100);
+            strcpy(filepath, operations);
+
+            filepath += 4; //Remove the "x/S " at the beginning of the string
+            filepath[strlen(filepath) - 1] = '\0'; //Remove the "\" at the end of the string
+
+            printf("%s\n", filepath);
+            parse_data(filepath, client_transaction);
 
             char *message = malloc(sizeof(char) * 1024);
-            sprintf(message, "%s", t->operations);
+            sprintf(message, "%s", client_transaction->operations);
             //Recreate the transaction sendend by the client because the transaction is not sent as a struct
 
             int client_socket = clients[client_id];
             write(client_socket, message, strlen(message));
             //Send the transaction to the client
 
+            printf("Transaction sent to client %d\n", client_id);
             remove_first_transaction(fifo_head);
-            // free(t);
+            printf("Transaction processed\n");
 
         } else {
             sleep(1); //Sleep for 1 second if there are no transactions to process

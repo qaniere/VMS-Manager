@@ -23,11 +23,6 @@ int is_thread_list_full() {
 */
 Transaction *read_transaction(Transaction *transaction) {
 
-    sem_t *client_transaction_semaphore = malloc(sizeof(sem_t));
-    sem_init(client_transaction_semaphore, 0, 1);
-    //Get the semaphore of the client transaction reponse
-    //to avoid threads conflicts
-
     Transaction *client_transaction = malloc(sizeof(Transaction));
     client_transaction->client_id = transaction->client_id;
 
@@ -53,6 +48,15 @@ Transaction *read_transaction(Transaction *transaction) {
         sleep(0.5); 
         //Sleep half second to avoid collision between threads
 
+        if(operation[0] == 'S') {
+
+            char *filepath = malloc(sizeof(char) * 100);
+            strcpy(filepath, operation);
+
+            filepath += 2; //Remove the "S " at the beginning of the string
+
+            parse_data(filepath, client_transaction);
+        }
     }
 
     for(int i = 0; i < thread_count; i++) {

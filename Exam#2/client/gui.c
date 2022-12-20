@@ -121,6 +121,8 @@ void gui_loop() {
             mvwprintw(windows[0], 7, 2, "> ");
             wrefresh(windows[0]);
             //Clear the input
+
+            redisplay_everything();
         }
 
         refresh();
@@ -238,6 +240,8 @@ void *server_listenner(void *socket) {
     int bytes;
     char buffer[1024];
     while(bytes = recv(client_socket, buffer, 1024, 0)) {
+
+        printw("Received : %s\n", buffer);
 
         char *token = strtok(buffer, "/");
         char *messages[100];
