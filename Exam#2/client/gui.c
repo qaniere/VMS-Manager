@@ -52,8 +52,19 @@ void init_gui() {
     mvwprintw(right_window, 0, 2, "Reception");
     //Title of the windows
 
-    noecho();
-    //Disable echo of user input
+    int middle = ((columns / 2) - 1) / 2;
+
+    char firstLine[] = "Saisissez le nom du fichier";
+    char secondLine[] = "dont vous voulez recuperer les informations";
+    char thirdLine[] = "et appuyez sur \"entree\"";
+    char fourthLine[] = "ou \"q\" pour quitter";
+
+    mvwprintw(windows[0], 2, middle - (strlen(firstLine) / 2), firstLine);
+    mvwprintw(windows[0], 3, middle - (strlen(secondLine) / 2), secondLine);
+    mvwprintw(windows[0], 4, middle - (strlen(thirdLine) / 2), thirdLine);
+    mvwprintw(windows[0], 5, middle - (strlen(fourthLine) / 2), fourthLine);
+
+    mvwprintw(windows[0], 7, 2, "> ");
 
     wrefresh(left_window);
     wrefresh(right_window);
@@ -83,6 +94,34 @@ void gui_loop() {
             transaction->clientID = client_id;
         }
 
+        mvwprintw(windows[0], 7, 2, "> ");
+
+        char filename[256];
+        mvgetnstr(7, 5, filename, 256);
+        //Get the user input
+
+        if(filename[0] == 'q' || filename[0] == 'Q' || filename == "quit") {
+            break;
+
+        } else {
+            char operation[256];
+            sprintf(operation, "S %s", filename);
+            //Create the operation string 
+            //The operation string is in the form of "S <filename>"
+
+            addOperationToTransaction(transaction, operation);
+            send_transaction(socket_fd, client_id, transaction->operations);
+            //Send the transaction to the server
+
+            transaction->operations[0] = '\0';
+            transaction = NULL;
+            //Reset the transaction
+
+            mvwprintw(windows[0], 7, 2, "                        ");
+            mvwprintw(windows[0], 7, 2, "> ");
+            wrefresh(windows[0]);
+            //Clear the input
+        }
 
         refresh();
     }
@@ -155,6 +194,16 @@ void redisplay_everything() {
 
     mvwprintw(windows[0], 0, 2, "Transmission");
     mvwprintw(windows[1], 0, 2, "Reception");
+
+    int middle = ((columns / 2) - 1) / 2;
+
+    char firstLine[] = "Saisissez le nom du fichier";
+    char secondLine[] = "dont vous voulez recuperer les informations";
+    char thirdLine[] = "et appuyez sur \"entree\"";
+
+    mvwprintw(windows[0], 2, middle - (strlen(firstLine) / 2), firstLine);
+    mvwprintw(windows[0], 3, middle - (strlen(secondLine) / 2), secondLine);
+    mvwprintw(windows[0], 4, middle - (strlen(thirdLine) / 2), thirdLine);
 
     refresh();
     wrefresh(windows[0]);
