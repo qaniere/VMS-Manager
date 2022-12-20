@@ -21,6 +21,8 @@ Transaction *transaction = NULL;
 int socket_fd = -1;
 //Contains the socket fd
 
+char *user_input = NULL;
+
 /*
 * This function initializes the ncurses library and creates two windows
 */
@@ -28,11 +30,10 @@ void init_gui() {
     initscr(); 
     //Initialize ncurses library
     
-    keypad(stdscr, TRUE);
-    //Enable keyboard input
-
     curs_set(0);
     //Hide cursor
+
+    noecho();
 
     lines = LINES;
     columns = COLS;
@@ -73,6 +74,8 @@ void init_gui() {
     display_server_ip();
     display_client_id();
     refresh();
+
+    user_input = malloc(sizeof(char) * 256);
 }
 
 /*
@@ -95,17 +98,26 @@ void gui_loop() {
         }
 
         mvwprintw(windows[0], 7, 2, "> ");
+        mvwprintw(windows[0], 7, 4, user_input);
 
-        char filename[256];
-        mvgetnstr(7, 5, filename, 256);
-        //Get the user input
+        char c = getch();
 
-        if(filename[0] == 'q' || filename[0] == 'Q' || filename == "quit") {
-            break;
+        if(c == 10) {
+            //Enter key
 
-        } else {
+            if(strlen(user_input) == 0) {
+                continue;
+            }
+
+            if(strcmp(user_input, "q") == 0 || strcmp(user_input, "Q") == 0 || strcmp(user_input, "quit") == 0) {
+                //Quit the program
+
+                endwin();
+                exit(0);
+            }
+
             char operation[256];
-            sprintf(operation, "S %s", filename);
+            sprintf(operation, "S %s", user_input);
             //Create the operation string 
             //The operation string is in the form of "S <filename>"
 
@@ -122,9 +134,44 @@ void gui_loop() {
             wrefresh(windows[0]);
             //Clear the input
 
-            redisplay_everything();
-        }
+            user_input[0] = '\0';
 
+            redisplay_everything();
+
+        } else if(c == 127) {
+            //Backspace key
+
+            if(strlen(user_input) == 0) {
+                continue;
+            }
+
+            user_input[strlen(user_input) - 1] = '\0';
+
+            mvwprintw(windows[0], 7, 2, "                        ");
+            mvwprintw(windows[0], 7, 2, "> ");
+            wrefresh(windows[0]);
+            //Clear the input
+
+            mvwprintw(windows[0], 7, 4, user_input);
+            wrefresh(windows[0]);
+
+        } else if(c == 27) {
+            //Escape key
+
+            mvwprintw(windows[0], 7, 2, "                        ");
+            mvwprintw(windows[0], 7, 2, "> ");
+            wrefresh(windows[0]);
+            //Clear the input
+
+            user_input[0] = '\0';
+
+        } else {
+            char str[2] = {c, '\0'};
+            strcat(user_input, str);
+            mvwprintw(windows[0], 7, 4, user_input);
+            wrefresh(windows[0]);
+        }
+    
         refresh();
     }
 }

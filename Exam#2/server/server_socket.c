@@ -135,8 +135,6 @@ void *watch_transactions(void *args) {
             int client_id = transaction->client_id;
             char *operations = transaction->operations;
 
-            printf("Processing transaction: %s\n", operations);
-        
             Transaction *client_transaction = malloc(sizeof(Transaction));
             client_transaction->client_id = transaction->client_id;
 
@@ -146,7 +144,6 @@ void *watch_transactions(void *args) {
             filepath += 4; //Remove the "x/S " at the beginning of the string
             filepath[strlen(filepath) - 1] = '\0'; //Remove the "\" at the end of the string
 
-            printf("%s\n", filepath);
             parse_data(filepath, client_transaction);
 
             char *message = malloc(sizeof(char) * 1024);
@@ -157,9 +154,7 @@ void *watch_transactions(void *args) {
             write(client_socket, message, strlen(message));
             //Send the transaction to the client
 
-            printf("Transaction sent to client %d\n", client_id);
             remove_first_transaction(fifo_head);
-            printf("Transaction processed\n");
 
         } else {
             sleep(1); //Sleep for 1 second if there are no transactions to process
