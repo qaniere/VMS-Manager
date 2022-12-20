@@ -38,7 +38,7 @@ Certaines plages mémoires du thread main sont les mêmes que celles des threads
 
 ### Question C
 
-La liste des fichiers ouvertes est différente, on peut remarquer que certains descripteurs de fichier de type socket on disparu. Cela signifie que ces sockets ont été fermées, soit par le serveur, soit par le client, en raison d'une erreur ou d'une déconnexion.
+La liste des fichiers ouverts est différente, on peut remarquer que certains descripteurs de fichier de type socket on disparu. Cela signifie que ces sockets ont été fermées, soit par le serveur, soit par le client, en raison d'une erreur ou d'une déconnexion.
 
 \pagebreak
 
