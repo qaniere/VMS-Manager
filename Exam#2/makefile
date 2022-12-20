@@ -30,7 +30,7 @@ endif
 #Launch the client
 
 pdf:
-	pandoc -o manuel.pdf -f markdown-implicit_figures README.MD
+	pandoc -o RÉPONSES.pdf -f markdown-implicit_figures README.MD
 
 #Generate the pdf file from the README.MD file
 
