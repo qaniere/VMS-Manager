@@ -21,13 +21,13 @@ The server logs are displayed in the console. We can see that two clients were c
 
 #### With makefile
 
-bash
+```bash
 make server
 ```
 
 #### Without makefile
 
-``bash
+```bash
 gcc -o server server.c 
 ```
 
@@ -65,13 +65,13 @@ make launch-server
 
 #### With makefile
 
-``bash
+```bash
 make launch-client
 ```
 
 #### Without makefile
 
-``bash
+```bash
 ./client
 ```
 
@@ -81,13 +81,13 @@ To choose the port (client and server) :
 
 #### With makefile
 
-``bash
+```bash
 make launch-< server | client > port=< port >
 ```
 
 #### Without makefile
 
-``bash
+```bash
 ./< server | client > < port >
 ```
 
