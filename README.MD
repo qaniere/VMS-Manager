@@ -57,7 +57,7 @@ make launch-server
 
 #### Without makefile
 
-``bash
+```bash
 ./server
 ```
 
