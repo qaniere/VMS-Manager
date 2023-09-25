@@ -35,7 +35,7 @@ gcc -o server server.c
 
 #### With makefile
 
-``bash
+```bash
 make client
 ```
 
